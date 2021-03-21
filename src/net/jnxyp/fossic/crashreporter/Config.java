@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public final class Config {
     public static final String PROGRAM_NAME = "远行星号 报错信息收集工具";
-    public static final String PROGRAM_VERSION = "1.0.3";
+    public static final String PROGRAM_VERSION = "1.0.4";
 
     public static final Pattern JSON_COMMENTS_PATTERN = Pattern.compile("#.*$", Pattern.MULTILINE);
 

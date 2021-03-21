@@ -25,7 +25,7 @@ public class ModInfoCollector extends BaseInfoCollector {
         File modsFolder = Config.getInstance().getModPath().toFile();
 
         ArrayList<ModInfo> mods = new ArrayList<>();
-        File[] modFolders = {};
+        File[] modFolders;
         try {
             modFolders = Objects.requireNonNull(modsFolder.listFiles(new FileFilter() {
                 @Override
@@ -38,10 +38,12 @@ public class ModInfoCollector extends BaseInfoCollector {
         }
         for (File modFolder : modFolders) {
             File modInfoFile = Paths.get(modFolder.toString(), Config.RELATIVE_MOD_INFO_PATH).toFile();
-            try {
-                mods.add(ModInfo.fromModInfoFile(modInfoFile));
-            } catch (IOException | JSONException e) {
-                throw new InfoCollectionPartialFailureException(this, String.format("在读取Mod信息文件 %s 时发生错误", modInfoFile.toPath().toString()), e);
+            if (modInfoFile.exists()) {
+                try {
+                    mods.add(ModInfo.fromModInfoFile(modInfoFile));
+                } catch (IOException | JSONException e) {
+                    throw new InfoCollectionPartialFailureException(this, String.format("在读取Mod信息文件 %s 时发生错误", modInfoFile.toPath().toString()), e);
+                }
             }
         }
 
