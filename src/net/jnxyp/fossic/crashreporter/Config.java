@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public final class Config {
     public static final String PROGRAM_NAME = "远行星号 报错信息收集工具";
-    public static final String PROGRAM_VERSION = "1.0.4";
+    public static final String PROGRAM_VERSION = "1.0.5";
 
     public static final Pattern JSON_COMMENTS_PATTERN = Pattern.compile("#.*$", Pattern.MULTILINE);
 
@@ -34,6 +34,8 @@ public final class Config {
     public static final Charset VMPARAMS_CHARSET = StandardCharsets.UTF_8;
     public static final Charset MOD_INFO_CHARSET = StandardCharsets.UTF_8;
     public static final Charset ENABLED_MOD_LIST_CHARSET = StandardCharsets.UTF_8;
+
+//    public static final int UI_FONT_SIZE = 18;
 
     private Config() {
     }

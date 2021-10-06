@@ -56,7 +56,7 @@ public class ModInfoCollector extends BaseInfoCollector {
                 enabledModIds.add(array.getString(i));
             }
         } catch (IOException e) {
-            throw new InfoCollectionPartialFailureException(this, String.format("在读取已启用Mod列表文件 %s 时发生错误", enabledModListFile.toPath().toString()), e);
+            throw new InfoCollectionPartialFailureException(this, String.format("在读取已启用Mod列表文件 %s 时发生错误", enabledModListFile.toPath()), e);
         }
 
         for (ModInfo info : mods) {
@@ -95,10 +95,18 @@ public class ModInfoCollector extends BaseInfoCollector {
         public static ModInfo fromModInfoFile(File modInfoFile) throws IOException {
             String modInfoString = Util.readFile(modInfoFile, Config.MOD_INFO_CHARSET);
             JSONObject dict = Util.parseJson(modInfoString);
+            Object versionObj = dict.get("version");
+            String version = "";
+            if (versionObj instanceof String) {
+                version = (String) versionObj;
+            } else if (versionObj instanceof JSONObject) {
+                JSONObject v = (JSONObject) versionObj;
+                version = String.format("%d.%d.%d", v.getInt("major"), v.getInt("minor"), v.getInt("patch"));
+            }
             return new ModInfo(
                     dict.getString("id"),
                     dict.getString("name"),
-                    dict.getString("version"),
+                    version,
                     dict.getString("gameVersion"),
                     false);
         }

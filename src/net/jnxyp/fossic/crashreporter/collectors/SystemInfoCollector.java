@@ -19,13 +19,11 @@ public class SystemInfoCollector extends BaseInfoCollector {
     public String getRawInfo() throws InfoCollectionPartialFailureException {
         String javaVersion = System.getProperty("java.version");
         String javaPath = System.getProperty("java.home");
-        StringBuilder builder = new StringBuilder();
 
-        builder.append(getWarning(javaVersion, javaPath))
-                .append(String.format("Java版本：\t`%s`\n\n", javaVersion))
-                .append(String.format("Java路径：\t%s\n\n", javaPath))
-                .append(String.format("虚拟机参数：\t%s", getVmparams()));
-        return builder.toString();
+        return getWarning(javaVersion, javaPath) +
+                String.format("Java版本：\t`%s`\n\n", javaVersion) +
+                String.format("Java路径：\t%s\n\n", javaPath) +
+                String.format("虚拟机参数：\t%s", getVmparams());
     }
 
     protected String getVmparams() throws InfoCollectionPartialFailureException {

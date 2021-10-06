@@ -1,5 +1,4 @@
 package net.jnxyp.fossic.crashreporter;
-
 import java.nio.file.Paths;
 
 public class Main {

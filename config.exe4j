@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<exe4j version="8.0" transformSequenceNumber="3">
+  <directoryPresets config="D:/Game/Starsector" />
+  <application name="Fossic-CrashReporter" distributionSourceDir="D:/Game/Starsector/Starsector 0.95 RC15" />
+  <executable name="Fossic-CrashReporter" wrapperType="embed" executableDir="." executableMode="gui" singleInstance="true" dpiAware="true">
+    <versionInfo include="true" legalCopyright="© 2021 Durian Software Studio " internalName="Demo" companyName="Durian Software Studio" productVersion="1.0.5" />
+  </executable>
+  <java mainClass="net.jnxyp.fossic.crashreporter.Main" preferredVM="client" minVersion="1.7">
+    <searchSequence>
+      <directory location="./jre" />
+      <registry />
+      <envVar name="JAVA_HOME" />
+      <envVar name="JDK_HOME" />
+    </searchSequence>
+    <classPath>
+      <archive location="D:/My File/Projects/Fossic-CrashReporter/out/artifacts/Fossic_CrashReporter_jar/Fossic-CrashReporter.jar" failOnError="false" />
+    </classPath>
+  </java>
+</exe4j>
