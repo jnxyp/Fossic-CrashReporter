@@ -101,7 +101,7 @@ public class ModInfoCollector extends BaseInfoCollector {
                 version = (String) versionObj;
             } else if (versionObj instanceof JSONObject) {
                 JSONObject v = (JSONObject) versionObj;
-                version = String.format("%d.%d.%d", v.getInt("major"), v.getInt("minor"), v.getInt("patch"));
+                version = String.format("%s.%s.%s", v.get("major").toString(), v.get("minor").toString(), v.get("patch").toString());
             }
             return new ModInfo(
                     dict.getString("id"),
