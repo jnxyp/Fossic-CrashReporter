@@ -9,13 +9,20 @@ import java.util.List;
 
 
 public class LogInfoCollector extends BaseInfoCollector {
+
+
+
     @Override
     public String getName() {
         return "游戏日志";
     }
 
     @Override
-    public String getRawInfo() throws InfoCollectionPartialFailureException {
+    public void collectInfo() {
+    }
+
+    @Override
+    public String asMarkdown() throws InfoCollectionPartialFailureException {
         File logFile = Config.getInstance().getLogPath().toFile();
         StringBuilder builder = new StringBuilder();
         try {

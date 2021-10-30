@@ -4,6 +4,7 @@
     <root id="archive" name="Fossic-CrashReporter.jar">
       <element id="module-output" name="Fossic-CrashReporter" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-20210307.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/swingx-all-1.6.5-1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="json-20210307" level="project" />
+    <orderEntry type="library" name="swingx-all-1.6.5-1" level="project" />
   </component>
 </module>

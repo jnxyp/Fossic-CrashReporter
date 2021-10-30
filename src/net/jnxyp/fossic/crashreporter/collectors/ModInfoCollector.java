@@ -4,6 +4,7 @@ import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
 import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionFailureException;
 import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
+import net.jnxyp.fossic.crashreporter.models.ModInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,16 +16,24 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class ModInfoCollector extends BaseInfoCollector {
+    public List<ModInfo> mods;
+
+
     @Override
     public String getName() {
         return "Mod信息";
     }
 
     @Override
-    public String getRawInfo() throws InfoCollectionPartialFailureException {
+    public void collectInfo() throws InfoCollectionPartialFailureException {
+        collectModInfo();
+        collectEnabledModInfo();
+    }
+
+    protected void collectModInfo() throws InfoCollectionPartialFailureException {
         File modsFolder = Config.getInstance().getModPath().toFile();
 
-        ArrayList<ModInfo> mods = new ArrayList<>();
+        mods = new ArrayList<>();
         File[] modFolders;
         try {
             modFolders = Objects.requireNonNull(modsFolder.listFiles(new FileFilter() {
@@ -46,7 +55,9 @@ public class ModInfoCollector extends BaseInfoCollector {
                 }
             }
         }
+    }
 
+    protected void collectEnabledModInfo() throws InfoCollectionPartialFailureException {
         ArrayList<String> enabledModIds = new ArrayList<>();
         File enabledModListFile = Config.getInstance().getEnabledModListPath().toFile();
         try {
@@ -66,7 +77,10 @@ public class ModInfoCollector extends BaseInfoCollector {
         }
 
         Collections.sort(mods);
+    }
 
+    @Override
+    public String asMarkdown() throws InfoCollectionPartialFailureException {
         StringBuilder builder = new StringBuilder();
         builder.append("|Mod名称|Mod版本|已启用|\n");
         builder.append("|-|-|-|\n");
@@ -77,58 +91,5 @@ public class ModInfoCollector extends BaseInfoCollector {
         return builder.toString();
     }
 
-    static class ModInfo implements Comparable<ModInfo> {
-        String id;
-        String name;
-        String version;
-        String gameVersion;
-        boolean enabled;
 
-        public ModInfo(String id, String name, String version, String gameVersion, boolean enabled) {
-            this.id = id;
-            this.name = name;
-            this.version = version;
-            this.gameVersion = gameVersion;
-            this.enabled = enabled;
-        }
-
-        public static ModInfo fromModInfoFile(File modInfoFile) throws IOException {
-            String modInfoString = Util.readFile(modInfoFile, Config.MOD_INFO_CHARSET);
-            JSONObject dict = Util.parseJson(modInfoString);
-            Object versionObj = dict.get("version");
-            String version = "";
-            if (versionObj instanceof String) {
-                version = (String) versionObj;
-            } else if (versionObj instanceof JSONObject) {
-                JSONObject v = (JSONObject) versionObj;
-                version = String.format("%s.%s.%s", v.get("major").toString(), v.get("minor").toString(), v.get("patch").toString());
-            }
-            return new ModInfo(
-                    dict.getString("id"),
-                    dict.getString("name"),
-                    version,
-                    dict.getString("gameVersion"),
-                    false);
-        }
-
-        @Override
-        public int compareTo(ModInfo o) {
-            List<String> priorityModIds = Arrays.asList(Config.PRIORITY_MOD_IDS);
-            int thisPriority = priorityModIds.indexOf(this.id);
-            int oPriority = priorityModIds.indexOf(o.id);
-            if (thisPriority != oPriority) {
-                if (thisPriority == -1) {
-                    return 1;
-                } else if (oPriority == -1) {
-                    return -1;
-                } else {
-                    return thisPriority - oPriority;
-                }
-            }
-            if (this.enabled != o.enabled) {
-                return this.enabled ? -1 : 1;
-            }
-            return this.name.compareToIgnoreCase(o.name);
-        }
-    }
 }

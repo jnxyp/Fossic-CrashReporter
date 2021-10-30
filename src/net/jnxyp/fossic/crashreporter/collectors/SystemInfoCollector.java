@@ -7,44 +7,87 @@ import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureExc
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.regex.Matcher;
 
 public class SystemInfoCollector extends BaseInfoCollector {
+    public String javaVersion;
+    public Path javaPath;
+    public String vmParams;
+
+    public int xms;
+    public int xmx;
+    public boolean foundGameJre;
+    public boolean useGameDefaultJre;
+
+
     @Override
     public String getName() {
         return "系统信息";
     }
 
     @Override
-    public String getRawInfo() throws InfoCollectionPartialFailureException {
-        String javaVersion = System.getProperty("java.version");
-        String javaPath = System.getProperty("java.home");
-
-        return getWarning(javaVersion, javaPath) +
-                String.format("Java版本：\t`%s`\n\n", javaVersion) +
-                String.format("Java路径：\t%s\n\n", javaPath) +
-                String.format("虚拟机参数：\t%s", getVmparams());
+    public void collectInfo() throws InfoCollectionPartialFailureException {
+        collectJreInfo();
+        collectVmparams();
     }
 
-    protected String getVmparams() throws InfoCollectionPartialFailureException {
-        File vmparams = Config.getInstance().getVmparamsPath().toFile();
-        try {
-            String params = Util.readFile(vmparams, Config.VMPARAMS_CHARSET);
-            return Config.VMPARAMS_MEMORY_VALUE_PATTERN.matcher(params).replaceAll("**`$1`** ");
-        } catch (IOException e) {
-            throw new InfoCollectionPartialFailureException(this, String.format("从 %s 读取Vmparams信息时发生错误", vmparams.getAbsolutePath()), e);
-        }
-    }
-
-    protected String getWarning(String javaVersion, String javaPath) {
+    @Override
+    public String asMarkdown() {
         StringBuilder builder = new StringBuilder();
-        Path jrePath = Paths.get(javaPath).toAbsolutePath();
-        if (jrePath.compareTo(Config.getInstance().getGameDefaultJrePath().toAbsolutePath()) != 0) {
+        if (!foundGameJre) {
             builder.append("**警告：未找到游戏默认Java运行时**\n\n");
+        } else {
+            if (!useGameDefaultJre) {
+                builder.append(String.format("**警告：游戏目录下Java运行时版本与默认值(%s)不符**\n\n", Config.GAME_JRE_DEFAULT_VERSION));
+            }
+            builder.append(String.format("Java版本：\t\t`%s`\n", javaVersion));
+            builder.append(String.format("Java路径：\t\t%s\n\n", javaPath));
         }
-        if (!javaVersion.equals(Config.GAME_DEFAULT_JRE_VERSION)) {
-            builder.append(String.format("**警告：游戏目录下Java运行时版本与默认值(%s)不符**\n\n", Config.GAME_DEFAULT_JRE_VERSION));
-        }
+        builder.append(String.format("虚拟机参数：\t%s\n", vmParams));
+        builder.append(String.format("堆栈初始大小(`-Xms`)：\t`%sm`\n", xmx));
+        builder.append(String.format("堆栈最大大小(`-Xmx`)：\t`%sm`", xms));
+
         return builder.toString();
+    }
+
+    protected void collectJreInfo() {
+        javaVersion = "";
+        javaPath = Config.getInstance().getGameJrePath();
+        if (Util.getOSType().equals("WINDOWS")) {
+            foundGameJre = false;
+            try {
+                String output = Util.runCommand(new String[]{Config.getInstance().getGameJreExePath().toString(), "-version"});
+                Matcher m = Config.GAME_JRE_CLI_VERSION_PATTERN.matcher(output);
+                if (m.find()) {
+                    javaVersion = m.group(1);
+                    foundGameJre = true;
+                }
+            } catch (IOException ignored) {
+            }
+        } else {
+            // todo: try get jre version the game uses in other os
+            foundGameJre = false;
+        }
+
+        useGameDefaultJre = javaPath.compareTo(Config.getInstance().getGameJrePath()) == 0;
+    }
+
+    protected void collectVmparams() throws InfoCollectionPartialFailureException {
+        File vmParamsFile = Config.getInstance().getVmparamsPath().toFile();
+        try {
+            vmParams = Util.readFile(vmParamsFile, Config.VMPARAMS_CHARSET);
+            Matcher m = Config.VMPARAMS_MEMORY_VALUE_PATTERN.matcher(vmParams);
+            while (m.find()) {
+                String s = m.group(0);
+                int n = Integer.parseInt(m.group(2));
+                if (s.contains("Xmx")) {
+                    xmx = n;
+                } else {
+                    xms = n;
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            throw new InfoCollectionPartialFailureException(this, String.format("从 %s 读取Vmparams信息时发生错误", vmParamsFile.getAbsolutePath()), e);
+        }
     }
 }

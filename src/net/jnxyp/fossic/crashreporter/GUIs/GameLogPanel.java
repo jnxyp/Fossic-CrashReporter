@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainFrame extends JFrame {
+public class GameLogPanel extends JFrame {
     protected GridBagLayout gbl;
 
     protected JScrollPane reportScrollPane;
@@ -19,7 +19,7 @@ public class MainFrame extends JFrame {
 
     protected String gameErrorLog;
 
-    public MainFrame() {
+    public GameLogPanel() {
         super(Config.PROGRAM_NAME + " " + Config.PROGRAM_VERSION);
         this.setBounds(400, 400, 800, 600);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -110,7 +110,7 @@ public class MainFrame extends JFrame {
         }
     }
 
-    public void updateReport(String s) {
+    public void setReport(String s) {
         this.reportTextArea.setText(s);
     }
 
