@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public final class Config {
     public static final String PROGRAM_NAME = "远行星号 报错信息收集工具";
-    public static final String PROGRAM_VERSION = "1.0.7";
+    public static final String PROGRAM_VERSION = "2.0.0";
 
     public Path GAME_PATH = Paths.get("");
 
@@ -23,9 +23,11 @@ public final class Config {
     public static final int VMPARAMS_XMS_DEFAULT_VALUE = 1536;
     public static final int VMPARAMS_XMX_DEFAULT_VALUE = 1536;
     public static final Pattern VMPARAMS_MEMORY_VALUE_PATTERN = Pattern.compile("(-Xms|-Xmx)(.*?)([kmg]) ");
-    public static final Pattern VMPARAMS_XMS_VALUE_PATTERN = Pattern.compile("(-Xms)(.*?)([kmg]) ");
-    public static final Pattern VMPARAMS_XMX_VALUE_PATTERN = Pattern.compile("(-Xmx)(.*?)([kmg]) ");
+    public static final Pattern VMPARAMS_XMS_VALUE_PATTERN = Pattern.compile("(-Xms)(.*?)([kmg])");
+    public static final Pattern VMPARAMS_XMX_VALUE_PATTERN = Pattern.compile("(-Xmx)(.*?)([kmg])");
     public static final Charset VMPARAMS_CHARSET = StandardCharsets.UTF_8;
+
+    public static final int[] SETTING_MEMORY_LEVELS = {1024, 1536, 2048, 3072, 4096, 6144, 8192};
 
     public static final String[] RELATIVE_MOD_PATH = {"mods"};
     public static final String[] RELATIVE_ENABLED_MOD_LIST_PATH = {"mods", "enabled_mods.json"};

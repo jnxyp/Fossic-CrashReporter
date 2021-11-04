@@ -5,12 +5,13 @@ import net.jnxyp.fossic.crashreporter.Util;
 import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class LogInfoCollector extends BaseInfoCollector {
-
-
+    protected List<String> logs;
+    protected List<String> errorInfo;
 
     @Override
     public String getName() {
@@ -18,23 +19,32 @@ public class LogInfoCollector extends BaseInfoCollector {
     }
 
     @Override
-    public void collectInfo() {
+    public void collectInfo() throws InfoCollectionPartialFailureException {
+        // todo: Implement a LogInfo model and move log parsing logic into it
+        logs = readLog();
+        errorInfo = extractErrorInfo(logs);
+        super.collectInfo();
     }
 
     @Override
-    public String asMarkdown() throws InfoCollectionPartialFailureException {
+    public String asMarkdown() {
         File logFile = Config.getInstance().getLogPath().toFile();
         StringBuilder builder = new StringBuilder();
+        for (String line : errorInfo) {
+            builder.append(line).append("\n");
+        }
+        return builder.toString();
+    }
+
+    protected List<String> readLog() throws InfoCollectionPartialFailureException {
+        File logFile = Config.getInstance().getLogPath().toFile();
+        List<String> lines;
         try {
-            List<String> lines = Util.readLastNLines(logFile, Config.LOG_CHARSET, Config.MAX_LOG_CHECK_LINES);
-            List<String> errorLines = extractErrorInfo(lines);
-            for (String line : errorLines) {
-                builder.append(line).append("\n");
-            }
+            lines = Util.readLastNLines(logFile, Config.LOG_CHARSET, Config.MAX_LOG_CHECK_LINES);
         } catch (IOException e) {
             throw new InfoCollectionPartialFailureException(this, "读取log时发生错误", e);
         }
-        return builder.toString();
+        return lines;
     }
 
     protected static List<String> extractErrorInfo(List<String> logs) {

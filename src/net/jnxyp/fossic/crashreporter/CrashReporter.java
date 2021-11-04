@@ -1,6 +1,8 @@
 package net.jnxyp.fossic.crashreporter;
 
-import net.jnxyp.fossic.crashreporter.GUIs.GameLogPanel;
+import net.jnxyp.fossic.crashreporter.GUIs.ErrorReportTabPanel;
+import net.jnxyp.fossic.crashreporter.GUIs.MainFrame;
+import net.jnxyp.fossic.crashreporter.GUIs.MemorySettingTabPanel;
 import net.jnxyp.fossic.crashreporter.collectors.BaseInfoCollector;
 import net.jnxyp.fossic.crashreporter.collectors.LogInfoCollector;
 import net.jnxyp.fossic.crashreporter.collectors.ModInfoCollector;
@@ -9,12 +11,12 @@ import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureExc
 
 import javax.swing.*;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 public class CrashReporter {
-    protected GameLogPanel gameLogPanel;
-    protected Collection<BaseInfoCollector> collectors;
+    protected MainFrame mainFrame;
     protected boolean hasPartialFailure;
 
     public CrashReporter() {
@@ -23,47 +25,37 @@ public class CrashReporter {
 
     public CrashReporter(Path gamePath) {
         Config.getInstance().GAME_PATH = gamePath;
-        gameLogPanel = new GameLogPanel();
-        gameLogPanel.setVisible(true);
 
-        collectors = Arrays.asList(
-                new SystemInfoCollector(),
-                new ModInfoCollector()
-        );
 
-        generateReport();
+        SystemInfoCollector systemInfoCollector = new SystemInfoCollector();
+        ModInfoCollector modInfoCollector = new ModInfoCollector();
+        LogInfoCollector logInfoCollector = new LogInfoCollector();
 
-        if (hasPartialFailure) {
-            JOptionPane.showMessageDialog(gameLogPanel, "部分信息收集失败，请确认将本工具置于starsector.exe所在的游戏根目录。");
-        } else {
-            gameLogPanel.setReady(true);
-        }
-    }
-
-    public void generateReport() {
-        hasPartialFailure = false;
-        gameLogPanel.setReport("");
-        gameLogPanel.appendReport("[md]");
+        List<BaseInfoCollector> collectors = new ArrayList<>(
+                Arrays.asList(systemInfoCollector, modInfoCollector, logInfoCollector));
 
         for (BaseInfoCollector collector : collectors) {
             try {
                 collector.collectInfo();
-                gameLogPanel.appendReport(String.format("### %s\n\n%s\n\n", collector.getName(), collector.asMarkdown()));
             } catch (InfoCollectionPartialFailureException e) {
                 hasPartialFailure = true;
-                gameLogPanel.appendReport(String.format("### %s\n\n%s\n\n", collector.getName(), Util.getStackTrace(e)));
             }
         }
-        gameLogPanel.appendReport(String.format("（以上内容由 %s 自动生成，生成工具版本 `%s`）.\n", Config.PROGRAM_NAME, Config.PROGRAM_VERSION));
-        gameLogPanel.appendReport("[/md]");
 
-        LogInfoCollector collector = new LogInfoCollector();
-        try {
-            collector.collectInfo();
-            gameLogPanel.setGameErrorLog(String.format("### %s\n\n%s\n\n", collector.getName(), collector.asMarkdown()));
-        } catch (InfoCollectionPartialFailureException e) {
-            hasPartialFailure = true;
-            gameLogPanel.setGameErrorLog(String.format("### %s\n\n%s\n\n", collector.getName(), Util.getStackTrace(e)));
+        ErrorReportTabPanel gameLogPanel = new ErrorReportTabPanel(collectors, logInfoCollector);
+        MemorySettingTabPanel memoryPanel = new MemorySettingTabPanel(systemInfoCollector);
+
+        mainFrame = new MainFrame();
+
+        mainFrame.addTabPanel(memoryPanel, 0);
+        mainFrame.addTabPanel(gameLogPanel, 0);
+        mainFrame.switchToTab(gameLogPanel);
+
+
+        mainFrame.setVisible(true);
+
+        if (hasPartialFailure) {
+            JOptionPane.showMessageDialog(mainFrame, "部分信息收集失败，请确认将本工具置于starsector.exe所在的游戏根目录。");
         }
     }
 }

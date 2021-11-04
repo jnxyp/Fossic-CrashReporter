@@ -30,6 +30,13 @@ public final class Util {
         return new String(bytes, charset);
     }
 
+    public static void writeTextFile(File file, String text, Charset charset) throws IOException {
+        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), charset);
+        writer.write(text);
+        writer.flush();
+        writer.close();
+    }
+
     public static String getStackTrace(Throwable e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

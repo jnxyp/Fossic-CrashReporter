@@ -28,6 +28,7 @@ public class ModInfoCollector extends BaseInfoCollector {
     public void collectInfo() throws InfoCollectionPartialFailureException {
         collectModInfo();
         collectEnabledModInfo();
+        super.collectInfo();
     }
 
     protected void collectModInfo() throws InfoCollectionPartialFailureException {
@@ -51,7 +52,7 @@ public class ModInfoCollector extends BaseInfoCollector {
                 try {
                     mods.add(ModInfo.fromModInfoFile(modInfoFile));
                 } catch (IOException | JSONException e) {
-                    throw new InfoCollectionPartialFailureException(this, String.format("在读取Mod信息文件 %s 时发生错误", modInfoFile.toPath().toString()), e);
+                    throw new InfoCollectionPartialFailureException(this, String.format("在读取Mod信息文件 %s 时发生错误", modInfoFile.toPath()), e);
                 }
             }
         }
@@ -80,7 +81,7 @@ public class ModInfoCollector extends BaseInfoCollector {
     }
 
     @Override
-    public String asMarkdown() throws InfoCollectionPartialFailureException {
+    public String asMarkdown() {
         StringBuilder builder = new StringBuilder();
         builder.append("|Mod名称|Mod版本|已启用|\n");
         builder.append("|-|-|-|\n");

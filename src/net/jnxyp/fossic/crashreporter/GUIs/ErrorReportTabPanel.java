@@ -2,14 +2,23 @@ package net.jnxyp.fossic.crashreporter.GUIs;
 
 import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
+import net.jnxyp.fossic.crashreporter.collectors.BaseInfoCollector;
+import net.jnxyp.fossic.crashreporter.collectors.LogInfoCollector;
+import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
 
 import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.List;
 
-public class GameLogPanel extends JFrame {
+public class ErrorReportTabPanel extends TabPanel {
+    protected List<BaseInfoCollector> collectors;
+    protected LogInfoCollector logInfo;
+    protected String gameErrorLog;
+
     protected GridBagLayout gbl;
 
     protected JScrollPane reportScrollPane;
@@ -17,23 +26,31 @@ public class GameLogPanel extends JFrame {
     protected JButton reportCopyButton;
     protected JButton logCopyButton;
 
-    protected String gameErrorLog;
 
-    public GameLogPanel() {
-        super(Config.PROGRAM_NAME + " " + Config.PROGRAM_VERSION);
-        this.setBounds(400, 400, 800, 600);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public ErrorReportTabPanel(List<BaseInfoCollector> collectors, LogInfoCollector logInfo) {
+        this.collectors = collectors;
+        this.logInfo = logInfo;
+
         this.gbl = new GridBagLayout();
         this.setLayout(gbl);
-
-        this.initComponents();
-        this.setReady(false);
-        this.initLayout();
+        init();
     }
 
-    protected void initComponents() {
+    public String getTabName() {
+        return "错误报告";
+    }
+
+    public void init() {
+        initComponents();
+        setReady(false);
+        initLayout();
+
+        generateReport();
+        setReady(true);
+    }
+
+    void initComponents() {
         reportTextArea = new JTextArea();
-        reportTextArea.append("正在收集信息，请稍侯...");
         reportScrollPane = new JScrollPane(reportTextArea);
 
         reportCopyButton = new JButton("复制报告内容");
@@ -41,15 +58,6 @@ public class GameLogPanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Util.copyToClipboard(reportTextArea.getText());
-                reportCopyButton.setText("已复制√");
-                Timer timer = new Timer(1000, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        reportCopyButton.setText("复制报告内容");
-                    }
-                });
-                timer.setRepeats(false);
-                timer.start();
             }
         });
 
@@ -58,20 +66,11 @@ public class GameLogPanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Util.copyToClipboard(gameErrorLog);
-                logCopyButton.setText("已复制√");
-                Timer timer = new Timer(1000, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        logCopyButton.setText("复制游戏日志");
-                    }
-                });
-                timer.setRepeats(false);
-                timer.start();
             }
         });
     }
 
-    protected void initLayout() {
+    void initLayout() {
         GridBagConstraints gbc = new GridBagConstraints();
 
         gbc.gridx = gbc.gridy = 0;
@@ -120,5 +119,20 @@ public class GameLogPanel extends JFrame {
 
     public void setGameErrorLog(String s) {
         this.gameErrorLog = s;
+    }
+
+    public void generateReport() {
+        setReport("");
+        appendReport("[md]");
+
+        for (BaseInfoCollector collector : collectors) {
+            if (collector != logInfo) {
+                appendReport(String.format("### %s\n\n%s\n\n", collector.getName(), collector.asMarkdown()));
+            }
+        }
+        appendReport(String.format("（以上内容由 %s 自动生成，生成工具版本 `%s`）.\n", Config.PROGRAM_NAME, Config.PROGRAM_VERSION));
+        appendReport("[/md]");
+
+        setGameErrorLog(String.format("### %s\n\n%s\n\n", logInfo.getName(), logInfo.asMarkdown()));
     }
 }

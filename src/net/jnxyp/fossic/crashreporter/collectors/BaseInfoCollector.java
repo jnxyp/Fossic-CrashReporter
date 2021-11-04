@@ -6,15 +6,13 @@ import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureExc
 
 public abstract class BaseInfoCollector {
     protected boolean infoCollected = false;
-
-
     public abstract String getName();
 
     public void collectInfo() throws InfoCollectionPartialFailureException {
         this.infoCollected = true;
     }
 
-    public abstract String asMarkdown() throws InfoCollectionPartialFailureException;
+    public abstract String asMarkdown();
 
 
 }
