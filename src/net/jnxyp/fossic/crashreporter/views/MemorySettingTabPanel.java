@@ -2,7 +2,6 @@ package net.jnxyp.fossic.crashreporter.views;
 
 import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
-import net.jnxyp.fossic.crashreporter.collectors.SystemInfoCollector;
 import net.jnxyp.fossic.crashreporter.models.SystemInfo;
 import net.jnxyp.fossic.crashreporter.models.VmParams;
 
@@ -130,6 +129,9 @@ public class MemorySettingTabPanel extends TabPanel {
                 sliderLabels.put(i, label);
             }
         }
+
+        currentValue = Math.min(currentValue, Collections.max(memoryLevels));
+
         JSlider slider = new JSlider(JSlider.HORIZONTAL, Collections.min(memoryLevels), Collections.max(memoryLevels), currentValue);
 
         slider.addChangeListener(new ChangeListener() {

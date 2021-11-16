@@ -45,7 +45,7 @@ public class SystemInfo extends BaseInfo {
         builder.append(String.format("堆栈初始大小(`-Xms`)：\t`%sm`\n", vmParams.getXms()));
         builder.append(String.format("堆栈最大大小(`-Xmx`)：\t`%sm`", vmParams.getXmx()));
 
-        return builder + super.toMarkdown();
+        return super.toMarkdown(builder.toString());
     }
 
     public String toString() {
@@ -71,6 +71,6 @@ public class SystemInfo extends BaseInfo {
         builder.append(String.format("堆栈初始大小(-Xms)：\t%sm\n", vmParams.getXms()));
         builder.append(String.format("堆栈最大大小(-Xmx)：\t%sm", vmParams.getXmx()));
 
-        return builder + super.toMarkdown();
+        return super.toString(builder.toString());
     }
 }

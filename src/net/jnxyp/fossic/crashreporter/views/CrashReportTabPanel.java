@@ -125,12 +125,12 @@ public class CrashReportTabPanel extends TabPanel {
 
         for (BaseInfo info : infos) {
             if (info != logInfo) {
-                appendReport(String.format("### %s\n\n%s\n\n", info.getName(), info.toMarkdown()));
+                appendReport(info.toMarkdown());
             }
         }
         appendReport(String.format("（以上内容由 %s 自动生成，生成工具版本 `%s`）.\n", Config.PROGRAM_NAME, Config.PROGRAM_VERSION));
         appendReport("[/md]");
 
-        setGameErrorLog(String.format("### %s\n\n%s\n\n", logInfo.getName(), logInfo.toMarkdown()));
+        setGameErrorLog(logInfo.toMarkdown());
     }
 }

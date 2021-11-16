@@ -24,8 +24,7 @@ public class ModInfo extends BaseInfo {
         for (Mod info : mods) {
             builder.append(String.format("%s\t\t\t%s\t\t%s\n", info.name, info.version, info.enabled ? "是" : "否"));
         }
-
-        return builder + super.toString();
+        return super.toString(builder.toString());
     }
 
     @Override
@@ -37,6 +36,6 @@ public class ModInfo extends BaseInfo {
             builder.append(String.format("|%s|%s|%s|\n", info.name, info.version, info.enabled ? "是" : "否"));
         }
 
-        return builder + super.toString();
+        return super.toMarkdown(builder.toString());
     }
 }

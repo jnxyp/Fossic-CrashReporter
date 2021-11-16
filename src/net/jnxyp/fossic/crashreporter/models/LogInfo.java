@@ -2,7 +2,7 @@ package net.jnxyp.fossic.crashreporter.models;
 
 import java.util.List;
 
-public class LogInfo extends BaseInfo{
+public class LogInfo extends BaseInfo {
     public List<String> logs;
     public List<String> errorInfo;
 
@@ -12,7 +12,7 @@ public class LogInfo extends BaseInfo{
         for (String line : errorInfo) {
             builder.append(line).append("\n");
         }
-        return builder + super.toString();
+        return super.toString(builder.toString());
     }
 
     @Override
@@ -21,7 +21,7 @@ public class LogInfo extends BaseInfo{
         for (String line : errorInfo) {
             builder.append(line).append("\n");
         }
-        return builder + super.toMarkdown();
+        return super.toMarkdown(builder.toString());
     }
 
     @Override
