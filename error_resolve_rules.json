@@ -1,0 +1,31 @@
+[
+  {
+    "condition": {
+      "type": "any",
+      "conditions": [
+        {
+          "type": "not_any",
+          "conditions": [
+            {
+              "type": "mods.exists",
+              "mod_id": "lw_lazylib"
+            },
+            {
+              "type": "mods.exists",
+              "mod_id": "shaderLib"
+            }
+          ]
+        },
+        {
+          "type": "stacktrace.contains",
+          "value": "Failed to find script of class [com.fs.starfarer.api.impl.campaign.CoreLifecyclePluginImpl]"
+        }
+      ]
+    },
+    "description": "前置mod缺失",
+    "solution": {
+      "type": "text",
+      "text": "检查前置mod是否安装"
+    }
+  }
+]

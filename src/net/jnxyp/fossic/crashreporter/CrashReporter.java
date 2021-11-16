@@ -1,19 +1,20 @@
 package net.jnxyp.fossic.crashreporter;
 
-import net.jnxyp.fossic.crashreporter.GUIs.ErrorReportTabPanel;
-import net.jnxyp.fossic.crashreporter.GUIs.MainFrame;
-import net.jnxyp.fossic.crashreporter.GUIs.MemorySettingTabPanel;
+import net.jnxyp.fossic.crashreporter.models.LogInfo;
+import net.jnxyp.fossic.crashreporter.models.ModInfo;
+import net.jnxyp.fossic.crashreporter.models.SystemInfo;
+import net.jnxyp.fossic.crashreporter.views.CrashReportTabPanel;
+import net.jnxyp.fossic.crashreporter.views.ErrorResolveTabPanel;
+import net.jnxyp.fossic.crashreporter.views.MainFrame;
+import net.jnxyp.fossic.crashreporter.views.MemorySettingTabPanel;
 import net.jnxyp.fossic.crashreporter.collectors.BaseInfoCollector;
 import net.jnxyp.fossic.crashreporter.collectors.LogInfoCollector;
-import net.jnxyp.fossic.crashreporter.collectors.ModInfoCollector;
+import net.jnxyp.fossic.crashreporter.collectors.ModsInfoCollector;
 import net.jnxyp.fossic.crashreporter.collectors.SystemInfoCollector;
-import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
 
 import javax.swing.*;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class CrashReporter {
     protected MainFrame mainFrame;
@@ -26,31 +27,37 @@ public class CrashReporter {
     public CrashReporter(Path gamePath) {
         Config.getInstance().GAME_PATH = gamePath;
 
-
         SystemInfoCollector systemInfoCollector = new SystemInfoCollector();
-        ModInfoCollector modInfoCollector = new ModInfoCollector();
+        ModsInfoCollector modInfoCollector = new ModsInfoCollector();
         LogInfoCollector logInfoCollector = new LogInfoCollector();
 
-        List<BaseInfoCollector> collectors = new ArrayList<>(
-                Arrays.asList(systemInfoCollector, modInfoCollector, logInfoCollector));
-
-        for (BaseInfoCollector collector : collectors) {
-            try {
-                collector.collectInfo();
-            } catch (InfoCollectionPartialFailureException e) {
+        for (BaseInfoCollector collector : new BaseInfoCollector[]{systemInfoCollector, modInfoCollector, logInfoCollector}) {
+            collector.collectInfo();
+            if (collector.getInfo().hasError()) {
                 hasPartialFailure = true;
             }
         }
 
-        ErrorReportTabPanel gameLogPanel = new ErrorReportTabPanel(collectors, logInfoCollector);
-        MemorySettingTabPanel memoryPanel = new MemorySettingTabPanel(systemInfoCollector);
+        SystemInfo systemInfo = systemInfoCollector.getInfo();
+        ModInfo modInfo = modInfoCollector.getInfo();
+        LogInfo logInfo = logInfoCollector.getInfo();
 
+        CrashReportTabPanel gameLogPanel = new CrashReportTabPanel(Arrays.asList(systemInfo, modInfo), logInfo);
+        MemorySettingTabPanel memoryPanel = new MemorySettingTabPanel(systemInfo);
+        ErrorResolveTabPanel errorPanel = new ErrorResolveTabPanel();
+
+        // Set global font
+        UIManager.put("Label.font", Config.UI_FONT);
+        UIManager.put("Button.font", Config.UI_FONT);
+
+
+        // Initialize user interface
         mainFrame = new MainFrame();
 
         mainFrame.addTabPanel(memoryPanel, 0);
         mainFrame.addTabPanel(gameLogPanel, 0);
+        mainFrame.addTabPanel(errorPanel, 0);
         mainFrame.switchToTab(gameLogPanel);
-
 
         mainFrame.setVisible(true);
 

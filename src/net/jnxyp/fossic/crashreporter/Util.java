@@ -2,10 +2,12 @@ package net.jnxyp.fossic.crashreporter;
 
 import org.json.JSONObject;
 
+import java.awt.*;
 import java.awt.datatransfer.StringSelection;
-import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -68,7 +70,7 @@ public final class Util {
         pb.redirectErrorStream(true);
         Process p = pb.start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        StringBuilder output  = new StringBuilder();
+        StringBuilder output = new StringBuilder();
         String line;
         while (true) {
             line = reader.readLine();
@@ -83,5 +85,76 @@ public final class Util {
 
     public static String runCommand(String[] args) throws IOException {
         return runCommand(args, Config.getInstance().getGamePath().toFile());
+    }
+
+    public static String runCommand(String command) throws IOException {
+        return runCommand(command.split(" "));
+    }
+
+
+    public static void openInBrowser(URL url) throws IOException {
+        try {
+            Desktop.getDesktop().browse(url.toURI());
+        } catch (Exception e) {
+            // From: https://stackoverflow.com/questions/5226212/how-to-open-the-default-webbrowser-using-java
+            switch (getOSType()) {
+                case "WINDOWS":
+                    runCommand("rundll32 url.dll,FileProtocolHandler " + url);
+                case "MACOS":
+                    runCommand("open " + url);
+                case "UNIX":
+                    String[] browsers = {"google-chrome", "firefox", "mozilla", "epiphany", "konqueror",
+                            "netscape", "opera", "links", "lynx"};
+                    StringBuilder cmd = new StringBuilder();
+                    for (int i = 0; i < browsers.length; i++)
+                        if (i == 0)
+                            cmd.append(String.format("%s \"%s\"", browsers[i], url));
+                        else
+                            cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
+                    runCommand("sh -c " + cmd);
+            }
+        }
+    }
+
+    // From: https://stackoverflow.com/questions/1359689/how-to-send-http-request-in-java
+    public static String sendPost(URL url, String urlParameters) throws IOException {
+        HttpURLConnection connection = null;
+
+        try {
+            // Create connection
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.setRequestProperty("Content-Length",
+                    Integer.toString(urlParameters.getBytes().length));
+            connection.setRequestProperty("Content-Language", "zh-CN");
+
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+
+            // Send request
+            DataOutputStream wr = new DataOutputStream(
+                    connection.getOutputStream());
+            wr.writeBytes(urlParameters);
+            wr.close();
+
+            // Get Response
+            InputStream is = connection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
+            String line;
+            while ((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            rd.close();
+            return response.toString();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 }

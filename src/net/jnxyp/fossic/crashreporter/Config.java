@@ -1,5 +1,7 @@
 package net.jnxyp.fossic.crashreporter;
 
+import javax.swing.*;
+import java.awt.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -9,6 +11,8 @@ import java.util.regex.Pattern;
 public final class Config {
     public static final String PROGRAM_NAME = "远行星号 报错信息收集工具";
     public static final String PROGRAM_VERSION = "2.0.0";
+
+    public static final Font UI_FONT = UIManager.getFont("Label.font").deriveFont(16.0f);
 
     public Path GAME_PATH = Paths.get("");
 
@@ -43,7 +47,8 @@ public final class Config {
     public static final int LOG_LINES_ABOVE_EXCEPTION = 3;
     public static final Pattern LOG_EXCEPTION_LINE_PATTERN = Pattern.compile("ERROR");
 
-//    public static final int UI_FONT_SIZE = 18;
+    public static final String URL_CLOUD_PASTEBOARD = "https://cp.api.jnxyp.net/";
+    public static final String URL_FOSSIC_CRASH_REPORT = "https://www.fossic.org/forum.php?mod=post&action=newthread&fid=41&extra=page%3D1&sortid=6";
 
     private Config() {
     }

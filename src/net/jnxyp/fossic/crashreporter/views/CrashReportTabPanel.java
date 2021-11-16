@@ -1,22 +1,20 @@
-package net.jnxyp.fossic.crashreporter.GUIs;
+package net.jnxyp.fossic.crashreporter.views;
 
 import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
-import net.jnxyp.fossic.crashreporter.collectors.BaseInfoCollector;
-import net.jnxyp.fossic.crashreporter.collectors.LogInfoCollector;
-import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
+import net.jnxyp.fossic.crashreporter.models.BaseInfo;
+import net.jnxyp.fossic.crashreporter.models.LogInfo;
 
 import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
 import java.util.List;
 
-public class ErrorReportTabPanel extends TabPanel {
-    protected List<BaseInfoCollector> collectors;
-    protected LogInfoCollector logInfo;
+public class CrashReportTabPanel extends TabPanel {
+    protected List<BaseInfo> infos;
+    protected LogInfo logInfo;
     protected String gameErrorLog;
 
     protected GridBagLayout gbl;
@@ -27,8 +25,8 @@ public class ErrorReportTabPanel extends TabPanel {
     protected JButton logCopyButton;
 
 
-    public ErrorReportTabPanel(List<BaseInfoCollector> collectors, LogInfoCollector logInfo) {
-        this.collectors = collectors;
+    public CrashReportTabPanel(List<BaseInfo> infos, LogInfo logInfo) {
+        this.infos = infos;
         this.logInfo = logInfo;
 
         this.gbl = new GridBagLayout();
@@ -125,14 +123,14 @@ public class ErrorReportTabPanel extends TabPanel {
         setReport("");
         appendReport("[md]");
 
-        for (BaseInfoCollector collector : collectors) {
-            if (collector != logInfo) {
-                appendReport(String.format("### %s\n\n%s\n\n", collector.getName(), collector.asMarkdown()));
+        for (BaseInfo info : infos) {
+            if (info != logInfo) {
+                appendReport(String.format("### %s\n\n%s\n\n", info.getName(), info.toMarkdown()));
             }
         }
         appendReport(String.format("（以上内容由 %s 自动生成，生成工具版本 `%s`）.\n", Config.PROGRAM_NAME, Config.PROGRAM_VERSION));
         appendReport("[/md]");
 
-        setGameErrorLog(String.format("### %s\n\n%s\n\n", logInfo.getName(), logInfo.asMarkdown()));
+        setGameErrorLog(String.format("### %s\n\n%s\n\n", logInfo.getName(), logInfo.toMarkdown()));
     }
 }

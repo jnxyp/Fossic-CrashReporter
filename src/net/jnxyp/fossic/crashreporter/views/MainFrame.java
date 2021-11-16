@@ -1,14 +1,11 @@
-package net.jnxyp.fossic.crashreporter.GUIs;
+package net.jnxyp.fossic.crashreporter.views;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.jnxyp.fossic.crashreporter.Config;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class MainFrame extends JFrame {
 

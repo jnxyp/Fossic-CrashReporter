@@ -1,4 +1,4 @@
-package net.jnxyp.fossic.crashreporter.GUIs;
+package net.jnxyp.fossic.crashreporter.views;
 
 import javax.swing.*;
 

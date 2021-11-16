@@ -3,111 +3,80 @@ package net.jnxyp.fossic.crashreporter.collectors;
 import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
 import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
+import net.jnxyp.fossic.crashreporter.models.SystemInfo;
 import net.jnxyp.fossic.crashreporter.models.VmParams;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
 
 public class SystemInfoCollector extends BaseInfoCollector {
-    public String osName;
-    public long totalRam;
 
-    public String javaVersion;
-    public Path javaPath;
-
-    public VmParams vmParams;
-
-    public boolean foundGameJre;
-    public boolean useGameDefaultJre;
-
-
-    @Override
-    public String getName() {
-        return "系统信息";
+    public SystemInfoCollector() {
+        info = new SystemInfo();
     }
 
     @Override
-    public void collectInfo() throws InfoCollectionPartialFailureException {
+    public void collectInfo() {
         collectSystemInfo();
         collectJreInfo();
         collectVmparams();
         super.collectInfo();
     }
 
-    @Override
-    public String asMarkdown() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(String.format("操作系统：\t\t%s\n", osName));
-        builder.append(String.format("总可用内存：\t\t%.2fG\n", totalRam / 1024.0 / 1024.0 / 1024.0));
-
-        builder.append('\n');
-
-        if (!foundGameJre) {
-            builder.append("**警告：未找到游戏默认Java运行时**\n\n");
-        } else {
-            if (!useGameDefaultJre) {
-                builder.append(String.format("**警告：游戏目录下Java运行时版本与默认值(%s)不符**\n\n", Config.GAME_JRE_DEFAULT_VERSION));
-            }
-            builder.append(String.format("Java版本：\t\t`%s`\n", javaVersion));
-            builder.append(String.format("Java路径：\t\t%s\n", javaPath));
-        }
-
-        builder.append('\n');
-
-        builder.append(String.format("虚拟机参数：\t\t%s\n", vmParams.getVmParams()));
-        builder.append(String.format("堆栈初始大小(`-Xms`)：\t`%sm`\n", vmParams.getXms()));
-        builder.append(String.format("堆栈最大大小(`-Xmx`)：\t`%sm`", vmParams.getXmx()));
-
-        return builder.toString();
-    }
-
     protected void collectSystemInfo() {
-        osName = System.getProperty("os.name");
+        getInfo().osName = System.getProperty("os.name");
         if (Util.getOSType().equals("WINDOWS")) {
             try {
-                String output = Util.runCommand(new String[]{"cmd.exe","/c","ver"});
-                osName = output.replaceAll("\n", "");
-            } catch (IOException ignored){}
+                String output = Util.runCommand(new String[]{"cmd.exe", "/c", "ver"});
+                getInfo().osName = output.replaceAll("\n", "");
+            } catch (IOException e) {
+                getInfo().addError(new InfoCollectionPartialFailureException(this, "在调用系统命令行获取Windows版本时发生错误。", e));
+            }
         }
 
         com.sun.management.OperatingSystemMXBean mxbean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-        totalRam = mxbean.getTotalPhysicalMemorySize();
+        getInfo().totalRam = mxbean.getTotalPhysicalMemorySize();
     }
 
     protected void collectJreInfo() {
-        javaVersion = "";
-        javaPath = Config.getInstance().getGameJrePath();
+        getInfo().javaPath = Config.getInstance().getGameJrePath();
         if (Util.getOSType().equals("WINDOWS")) {
-            foundGameJre = false;
+            getInfo().foundGameJre = false;
             try {
                 String output = Util.runCommand(new String[]{Config.getInstance().getGameJreExePath().toString(), "-version"});
                 Matcher m = Config.GAME_JRE_CLI_VERSION_PATTERN.matcher(output);
                 if (m.find()) {
-                    javaVersion = m.group(1);
-                    foundGameJre = true;
+                    getInfo().javaVersion = m.group(1);
+                    getInfo().foundGameJre = true;
                 }
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                getInfo().addError(new InfoCollectionPartialFailureException(this, "在调用系统命令行获取Jre版本时发生错误。", e));
             }
         } else {
             // todo: try get jre version the game uses in other os
-            foundGameJre = true;
-            javaVersion = System.getProperty("java.version");
-            javaPath = Paths.get(System.getProperty("java.home"));
+            getInfo().foundGameJre = true;
+            getInfo().javaVersion = System.getProperty("java.version");
+            getInfo().javaPath = Paths.get(System.getProperty("java.home"));
         }
 
-        useGameDefaultJre = foundGameJre && javaPath.compareTo(Config.getInstance().getGameJrePath()) == 0;
+        getInfo().useGameDefaultJre = getInfo().foundGameJre && getInfo().javaPath.compareTo(Config.getInstance().getGameJrePath()) == 0;
     }
 
-    protected void collectVmparams() throws InfoCollectionPartialFailureException {
+    protected void collectVmparams() {
         File vmParamsFile = Config.getInstance().getVmparamsPath().toFile();
         try {
-            vmParams = new VmParams(vmParamsFile);
+            getInfo().vmParams = new VmParams(vmParamsFile);
         } catch (IOException | NumberFormatException e) {
-            throw new InfoCollectionPartialFailureException(this, String.format("从 %s 读取Vmparams信息时发生错误", vmParamsFile.getAbsolutePath()), e);
+            getInfo().addError(new InfoCollectionPartialFailureException(this, String.format("从 %s 读取Vmparams信息时发生错误", vmParamsFile.getAbsolutePath()), e));
         }
+    }
+
+
+    @Override
+    public SystemInfo getInfo() {
+        return (SystemInfo) info;
     }
 }

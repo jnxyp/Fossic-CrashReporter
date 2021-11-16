@@ -1,18 +1,22 @@
 package net.jnxyp.fossic.crashreporter.collectors;
 
-import net.jnxyp.fossic.crashreporter.Util;
-import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionFailureException;
-import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
+import net.jnxyp.fossic.crashreporter.models.BaseInfo;
 
 public abstract class BaseInfoCollector {
     protected boolean infoCollected = false;
-    public abstract String getName();
+    protected BaseInfo info;
 
-    public void collectInfo() throws InfoCollectionPartialFailureException {
+    public String getName(){
+        return getInfo().getName() + "信息收集器";
+    }
+
+    public void collectInfo() {
         this.infoCollected = true;
     }
 
-    public abstract String asMarkdown();
+    public BaseInfo getInfo() {
+        return info;
+    }
 
 
 }

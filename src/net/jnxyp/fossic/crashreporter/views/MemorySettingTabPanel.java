@@ -1,8 +1,9 @@
-package net.jnxyp.fossic.crashreporter.GUIs;
+package net.jnxyp.fossic.crashreporter.views;
 
 import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
 import net.jnxyp.fossic.crashreporter.collectors.SystemInfoCollector;
+import net.jnxyp.fossic.crashreporter.models.SystemInfo;
 import net.jnxyp.fossic.crashreporter.models.VmParams;
 
 import javax.swing.*;
@@ -19,16 +20,17 @@ import java.util.Hashtable;
 
 
 public class MemorySettingTabPanel extends TabPanel {
-    protected SystemInfoCollector systemInfo;
+    protected SystemInfo systemInfo;
     protected int memoryValue;
 
     protected GridBagLayout gbl;
 
     protected JLabel memoryValueLabel;
+    protected JLabel descriptionLabel;
     protected JSlider memoryValueSlider;
     protected JButton saveButton;
 
-    public MemorySettingTabPanel(SystemInfoCollector systemInfo) {
+    public MemorySettingTabPanel(SystemInfo systemInfo) {
         this.systemInfo = systemInfo;
         this.memoryValue = systemInfo.vmParams.getXmx();
 
@@ -43,9 +45,14 @@ public class MemorySettingTabPanel extends TabPanel {
 
     @Override
     public void init() {
+
         memoryValueLabel = new JLabel();
         memoryValueLabel.setFont(memoryValueLabel.getFont().deriveFont(64.0f));
         memoryValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        descriptionLabel = new JLabel("拖动下方滑条来设置游戏可以使用的最大内存大小。");
+        descriptionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        descriptionLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 
         memoryValueSlider = generateMemorySlider();
         saveButton = new JButton("保存");
@@ -65,7 +72,7 @@ public class MemorySettingTabPanel extends TabPanel {
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gbc.gridy = 0;
-        gbc.weightx = 0.7;
+        gbc.weightx = 0.6;
         gbc.weighty = 0.3;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.BOTH;
@@ -73,11 +80,17 @@ public class MemorySettingTabPanel extends TabPanel {
         this.add(memoryValueLabel);
 
         gbc.gridy = 1;
+        gbc.weighty = 0.1;
+        gbl.setConstraints(descriptionLabel, gbc);
+        this.add(descriptionLabel);
+
+
+        gbc.gridy = 2;
         gbc.weighty = 0.3;
         gbl.setConstraints(memoryValueSlider, gbc);
         this.add(memoryValueSlider);
 
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.weighty = 0;
         gbl.setConstraints(saveButton, gbc);
         gbc.fill = GridBagConstraints.NONE;
@@ -112,7 +125,9 @@ public class MemorySettingTabPanel extends TabPanel {
         for (int i : Config.SETTING_MEMORY_LEVELS) {
             if (i < ram) {
                 memoryLevels.add(i);
-                sliderLabels.put(i, new JLabel(String.format("%d M", i)));
+                JLabel label = new JLabel(String.format("%d M", i));
+                label.setFont(Config.UI_FONT.deriveFont(12.0f));
+                sliderLabels.put(i, label);
             }
         }
         JSlider slider = new JSlider(JSlider.HORIZONTAL, Collections.min(memoryLevels), Collections.max(memoryLevels), currentValue);
