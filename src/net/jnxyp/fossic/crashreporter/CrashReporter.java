@@ -44,7 +44,7 @@ public class CrashReporter {
 
         CrashReportTabPanel gameLogPanel = new CrashReportTabPanel(Arrays.asList(systemInfo, modInfo), logInfo);
         MemorySettingTabPanel memoryPanel = new MemorySettingTabPanel(systemInfo);
-        ErrorResolveTabPanel errorPanel = new ErrorResolveTabPanel();
+        // ErrorResolveTabPanel errorPanel = new ErrorResolveTabPanel();
 
         // Set global font
         UIManager.put("Label.font", Config.UI_FONT);
@@ -56,7 +56,7 @@ public class CrashReporter {
 
         mainFrame.addTabPanel(memoryPanel, 0);
         mainFrame.addTabPanel(gameLogPanel, 0);
-        mainFrame.addTabPanel(errorPanel, 0);
+        // mainFrame.addTabPanel(errorPanel, 0);
         mainFrame.switchToTab(gameLogPanel);
 
         mainFrame.setVisible(true);

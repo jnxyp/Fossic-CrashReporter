@@ -11,8 +11,11 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SystemInfoCollector extends BaseInfoCollector {
+
+    public static final Pattern GAME_JRE_CLI_VERSION_PATTERN = Pattern.compile("java version \"(.*?)\"");
 
     public SystemInfoCollector() {
         info = new SystemInfo();
@@ -47,7 +50,7 @@ public class SystemInfoCollector extends BaseInfoCollector {
             getInfo().foundGameJre = false;
             try {
                 String output = Util.runCommand(new String[]{Config.getInstance().getGameJreExePath().toString(), "-version"});
-                Matcher m = Config.GAME_JRE_CLI_VERSION_PATTERN.matcher(output);
+                Matcher m = GAME_JRE_CLI_VERSION_PATTERN.matcher(output);
                 if (m.find()) {
                     getInfo().javaVersion = m.group(1);
                     getInfo().foundGameJre = true;

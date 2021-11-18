@@ -21,14 +21,10 @@ public final class Config {
     public static final String GAME_JRE_DEFAULT_VERSION = "1.7.0_79";
     public static final String[] RELATIVE_GAME_JRE_PATH = {"jre"};
     public static final String[] RELATIVE_GAME_JRE_EXE_PATH = {"bin", "java.exe"};
-    public static final Pattern GAME_JRE_CLI_VERSION_PATTERN = Pattern.compile("java version \"(.*?)\"");
 
     public static final String[] RELATIVE_VMPARAMS_PATH = {"vmparams"};
     public static final int VMPARAMS_XMS_DEFAULT_VALUE = 1536;
     public static final int VMPARAMS_XMX_DEFAULT_VALUE = 1536;
-    public static final Pattern VMPARAMS_MEMORY_VALUE_PATTERN = Pattern.compile("(-Xms|-Xmx)(.*?)([kmg]) ");
-    public static final Pattern VMPARAMS_XMS_VALUE_PATTERN = Pattern.compile("(-Xms)(.*?)([kmg])");
-    public static final Pattern VMPARAMS_XMX_VALUE_PATTERN = Pattern.compile("(-Xmx)(.*?)([kmg])");
     public static final Charset VMPARAMS_CHARSET = StandardCharsets.UTF_8;
 
     public static final int[] SETTING_MEMORY_LEVELS = {1024, 1536, 2048, 3072, 4096, 6144, 8192};

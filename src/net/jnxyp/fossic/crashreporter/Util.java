@@ -21,10 +21,14 @@ public final class Util {
     }
 
     public static List<String> readLastNLines(File file, Charset charset, int n) throws IOException {
-        List<String> lines = Arrays.asList(readFile(file, charset).split("\n"));
+        List<String> lines = readLines(file, charset);
         int endIndex = lines.size();
         int startIndex = Math.max(endIndex - n, 0);
         return lines.subList(startIndex, endIndex);
+    }
+
+    public static List<String> readLines(File file, Charset charset) throws IOException {
+        return Arrays.asList(readFile(file, charset).split("\n"));
     }
 
     public static String readFile(File file, Charset charset) throws IOException {
