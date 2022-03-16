@@ -64,35 +64,59 @@ public final class Util {
         } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
             return "UNIX";
         } else {
-            return "WTF is this";
+            return "UNKNOWN";
         }
     }
 
-    public static String runCommand(String[] args, File workingDirectory) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder(args);
-        pb.directory(workingDirectory);
-        pb.redirectErrorStream(true);
-        Process p = pb.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        StringBuilder output = new StringBuilder();
-        String line;
-        while (true) {
-            line = reader.readLine();
-            if (line == null) {
-                break;
+    public static class CmdRunner {
+        private static CmdRunner instance;
+        private Charset charset = Charset.defaultCharset();
+
+        private CmdRunner() {
+            if (getOSType().equals("WINDOWS")) {
+                try{
+                    String result = runCommand("cmd /c chcp");
+                    String codePage = result.split(":")[1].trim();
+                    if ("936".equals(codePage)) {
+                        charset = Charset.forName("GB2312");
+                    }
+                } catch (Exception ignored) {}
             }
-            output.append(line);
-            output.append("\n");
         }
-        return output.toString();
-    }
 
-    public static String runCommand(String[] args) throws IOException {
-        return runCommand(args, Config.getInstance().getGamePath().toFile());
-    }
+        public static synchronized CmdRunner getInstance() {
+            if (instance == null) {
+                instance = new CmdRunner();
+            }
+            return instance;
+        }
 
-    public static String runCommand(String command) throws IOException {
-        return runCommand(command.split(" "));
+        public String runCommand(String[] args, File workingDirectory) throws IOException {
+            ProcessBuilder pb = new ProcessBuilder(args);
+            pb.directory(workingDirectory);
+            pb.redirectErrorStream(true);
+            Process p = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), charset));
+            StringBuilder output = new StringBuilder();
+            String line;
+            while (true) {
+                line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+                output.append(line);
+                output.append("\n");
+            }
+            return output.toString();
+        }
+
+        public String runCommand(String[] args) throws IOException {
+            return runCommand(args, Config.getInstance().getGamePath().toFile());
+        }
+
+        public String runCommand(String command) throws IOException {
+            return runCommand(command.split(" "));
+        }
     }
 
 
@@ -103,9 +127,9 @@ public final class Util {
             // From: https://stackoverflow.com/questions/5226212/how-to-open-the-default-webbrowser-using-java
             switch (getOSType()) {
                 case "WINDOWS":
-                    runCommand("rundll32 url.dll,FileProtocolHandler " + url);
+                    CmdRunner.getInstance().runCommand("rundll32 url.dll,FileProtocolHandler " + url);
                 case "MACOS":
-                    runCommand("open " + url);
+                    CmdRunner.getInstance().runCommand("open " + url);
                 case "UNIX":
                     String[] browsers = {"google-chrome", "firefox", "mozilla", "epiphany", "konqueror",
                             "netscape", "opera", "links", "lynx"};
@@ -115,7 +139,7 @@ public final class Util {
                             cmd.append(String.format("%s \"%s\"", browsers[i], url));
                         else
                             cmd.append(String.format(" || %s \"%s\"", browsers[i], url));
-                    runCommand("sh -c " + cmd);
+                    CmdRunner.getInstance().runCommand("sh -c " + cmd);
             }
         }
     }
@@ -160,5 +184,11 @@ public final class Util {
                 connection.disconnect();
             }
         }
+    }
+
+    public static String markdownToText(String markdown) {
+        return markdown.replaceAll("^#+", "")
+                .replaceAll("`", "")
+                .replaceAll("/*/*(.*?)/*/*", "$1");
     }
 }

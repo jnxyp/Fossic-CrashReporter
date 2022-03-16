@@ -31,17 +31,28 @@ public class SystemInfoCollector extends BaseInfoCollector {
 
     protected void collectSystemInfo() {
         getInfo().osName = System.getProperty("os.name");
+        getInfo().osVersion = System.getProperty("os.version");
         if (Util.getOSType().equals("WINDOWS")) {
-            try {
-                String output = Util.runCommand(new String[]{"cmd.exe", "/c", "ver"});
-                getInfo().osName = output.replaceAll("\n", "");
-            } catch (IOException e) {
-                getInfo().addError(new InfoCollectionPartialFailureException(this, "在调用系统命令行获取Windows版本时发生错误。", e));
-            }
+            collectWindowsVersionInfo();
         }
 
         com.sun.management.OperatingSystemMXBean mxbean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         getInfo().totalRam = mxbean.getTotalPhysicalMemorySize();
+    }
+
+    protected void collectWindowsVersionInfo() {
+        try {
+            String output = Util.CmdRunner.getInstance().runCommand("systeminfo");
+            for (String line : output.split("\n")) {
+                if (line.startsWith("OS Name:") || (line.startsWith("OS 名称"))) {
+                    getInfo().osName = line.split(":")[1].trim();
+                } else if (line.startsWith("OS Version:") || line.startsWith("OS 版本")) {
+                    getInfo().osVersion = line.split(":")[1].trim();
+                }
+            }
+        } catch (IOException e) {
+            getInfo().addError(new InfoCollectionPartialFailureException(this, "在调用系统命令行获取Windows版本时发生错误。", e));
+        }
     }
 
     protected void collectJreInfo() {
@@ -49,7 +60,7 @@ public class SystemInfoCollector extends BaseInfoCollector {
         if (Util.getOSType().equals("WINDOWS")) {
             getInfo().foundGameJre = false;
             try {
-                String output = Util.runCommand(new String[]{Config.getInstance().getGameJreExePath().toString(), "-version"});
+                String output = Util.CmdRunner.getInstance().runCommand(new String[]{Config.getInstance().getGameJreExePath().toString(), "-version"});
                 Matcher m = GAME_JRE_CLI_VERSION_PATTERN.matcher(output);
                 if (m.find()) {
                     getInfo().javaVersion = m.group(1);

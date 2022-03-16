@@ -18,12 +18,11 @@ public abstract class BaseInfo {
         return !errors.isEmpty();
     }
 
-    public String toString(String content) {
+    public String toMarkdown() {
         StringBuilder builder = new StringBuilder();
+        builder.append(String.format("### %s\n\n", getName()));
 
-        builder.append(String.format("[%s]\n\n", getName()));
-
-        builder.append(content);
+        builder.append(asMarkdown());
 
         if (hasError()) {
             builder.append(String.format("\n在收集以上信息时，发生了 %d 个错误，可能导致信息内容不完整。\n以下列出错误细节：\n", errors.size()));
@@ -32,8 +31,10 @@ public abstract class BaseInfo {
             for (Throwable e : errors) {
                 index++;
                 builder.append(String.format("第 %d 个错误：\n", index));
+                builder.append("```");
                 builder.append(Util.getStackTrace(e));
-                builder.append("\n");
+                builder.append("```");
+                builder.append("\n\n");
             }
         }
 
@@ -42,14 +43,10 @@ public abstract class BaseInfo {
     }
 
     public String toString() {
-        return toString("（此部分无内容）");
-    }
-
-    public String toMarkdown(String content) {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("### %s\n\n", getName()));
+        builder.append(String.format("[%s]\n\n", getName()));
 
-        builder.append(content);
+        builder.append(asText());
 
         if (hasError()) {
             builder.append(String.format("\n在收集以上信息时，发生了 %d 个错误，可能导致信息内容不完整。\n以下列出错误细节：\n", errors.size()));
@@ -58,9 +55,7 @@ public abstract class BaseInfo {
             for (Throwable e : errors) {
                 index++;
                 builder.append(String.format("第 %d 个错误：\n", index));
-                builder.append("```");
                 builder.append(Util.getStackTrace(e));
-                builder.append("```");
                 builder.append("\n");
             }
         }
@@ -69,11 +64,11 @@ public abstract class BaseInfo {
         return builder.toString();
     }
 
-    public String toMarkdown() {
-        return toMarkdown("（此部分无内容）");
-    }
-
     public void addError(Throwable e) {
         errors.add(e);
     }
+
+    public String asText() {return "（不支持将本部分报告输出为纯文本格式）";}
+
+    public String asMarkdown() {return "（不支持将本部分报告输出为Markdown格式）";}
 }

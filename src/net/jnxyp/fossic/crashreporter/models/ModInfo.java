@@ -16,26 +16,29 @@ public class ModInfo extends BaseInfo {
         return "Mod信息";
     }
 
-
     @Override
-    public String toString() {
+    public String asMarkdown() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Mod名称\t\t\tMod版本\t\t已启用\n");
+        String rowTemplate = "|%-32s|%-8s|%-8s|\n";
+        builder.append(String.format(rowTemplate, "Mod名称", "Mod版本", "已启用"));
+        builder.append("|-|-|-|\n");
         for (Mod info : mods) {
-            builder.append(String.format("%s\t\t\t%s\t\t%s\n", info.name, info.version, info.enabled ? "是" : "否"));
+            builder.append(String.format("|%-32s|%-8s|%-8s|\n", info.name, info.version, info.enabled ? "是" : "否"));
         }
-        return super.toString(builder.toString());
+
+        return builder.toString();
     }
 
     @Override
-    public String toMarkdown() {
+    public String asText() {
         StringBuilder builder = new StringBuilder();
-        builder.append("|Mod名称|Mod版本|已启用|\n");
+        String rowTemplate = "|%-32s|%-8s|%-8s|\n";
+        builder.append(String.format(rowTemplate, "Mod名称", "Mod版本", "已启用"));
         builder.append("|-|-|-|\n");
         for (Mod info : mods) {
-            builder.append(String.format("|%s|%s|%s|\n", info.name, info.version, info.enabled ? "是" : "否"));
+            builder.append(String.format("|%-32s|%-8s|%-8s|\n", info.name, info.version, info.enabled ? "是" : "否"));
         }
 
-        return super.toMarkdown(builder.toString());
+        return builder.toString();
     }
 }

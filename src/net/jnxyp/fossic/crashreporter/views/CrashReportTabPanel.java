@@ -15,7 +15,6 @@ import java.util.List;
 public class CrashReportTabPanel extends TabPanel {
     protected List<BaseInfo> infos;
     protected LogInfo logInfo;
-    protected String gameErrorLog;
 
     protected GridBagLayout gbl;
 
@@ -24,10 +23,21 @@ public class CrashReportTabPanel extends TabPanel {
     protected JButton reportCopyButton;
     protected JButton logCopyButton;
 
+    // States
+    protected String logReportText;
+    protected StringBuilder reportText;
+    protected StringBuilder reportMarkdown;
+    protected boolean ready;
+
 
     public CrashReportTabPanel(List<BaseInfo> infos, LogInfo logInfo) {
         this.infos = infos;
         this.logInfo = logInfo;
+
+        logReportText = "";
+        reportText = new StringBuilder();
+        reportMarkdown = new StringBuilder();
+        ready = false;
 
         this.gbl = new GridBagLayout();
         this.setLayout(gbl);
@@ -44,6 +54,7 @@ public class CrashReportTabPanel extends TabPanel {
         initLayout();
 
         generateReport();
+        update();
         setReady(true);
     }
 
@@ -55,7 +66,7 @@ public class CrashReportTabPanel extends TabPanel {
         reportCopyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Util.copyToClipboard(reportTextArea.getText());
+                Util.copyToClipboard(reportMarkdown.toString());
             }
         });
 
@@ -63,7 +74,7 @@ public class CrashReportTabPanel extends TabPanel {
         logCopyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Util.copyToClipboard(gameErrorLog);
+                Util.copyToClipboard(logReportText);
             }
         });
     }
@@ -96,7 +107,12 @@ public class CrashReportTabPanel extends TabPanel {
     }
 
     public void setReady(boolean isReady) {
-        if (isReady) {
+        ready = isReady;
+        update();
+    }
+
+    public void update() {
+        if (ready) {
             reportCopyButton.setEnabled(true);
             logCopyButton.setEnabled(true);
             reportTextArea.setEditable(true);
@@ -105,32 +121,25 @@ public class CrashReportTabPanel extends TabPanel {
             logCopyButton.setEnabled(false);
             reportTextArea.setEditable(false);
         }
+        reportTextArea.setText(reportText.toString());
     }
 
-    public void setReport(String s) {
-        this.reportTextArea.setText(s);
-    }
+    protected void generateReport() {
+        reportText = new StringBuilder();
+        reportMarkdown = new StringBuilder();
 
-    public void appendReport(String s) {
-        this.reportTextArea.append(s);
-    }
-
-    public void setGameErrorLog(String s) {
-        this.gameErrorLog = s;
-    }
-
-    public void generateReport() {
-        setReport("");
-        appendReport("[md]");
+        reportMarkdown.append("[md]");
 
         for (BaseInfo info : infos) {
             if (info != logInfo) {
-                appendReport(info.toMarkdown());
+                reportMarkdown.append(info.toMarkdown());
+                reportText.append(info);
             }
         }
-        appendReport(String.format("（以上内容由 %s 自动生成，生成工具版本 `%s`）.\n", Config.PROGRAM_NAME, Config.PROGRAM_VERSION));
-        appendReport("[/md]");
+        reportMarkdown.append(String.format("（以上内容由 %s 自动生成，生成工具版本 `%s`）.\n", Config.PROGRAM_NAME, Config.PROGRAM_VERSION));
+        reportText.append(String.format("（以上内容由 %s 自动生成，生成工具版本 %s）.\n", Config.PROGRAM_NAME, Config.PROGRAM_VERSION));
+        reportMarkdown.append("[/md]");
 
-        setGameErrorLog(logInfo.toMarkdown());
+        logReportText = logInfo.toString();
     }
 }

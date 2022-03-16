@@ -6,22 +6,16 @@ public class LogInfo extends BaseInfo {
     public List<String> logs;
     public List<String> errorInfo;
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        for (String line : errorInfo) {
-            builder.append(line).append("\n");
-        }
-        return super.toString(builder.toString());
-    }
+    // TODO: log报错分析
+    public List<StackTrace> stackTraces;
 
     @Override
-    public String toMarkdown() {
+    public String asText() {
         StringBuilder builder = new StringBuilder();
         for (String line : errorInfo) {
             builder.append(line).append("\n");
         }
-        return super.toMarkdown(builder.toString());
+        return builder.toString();
     }
 
     @Override
