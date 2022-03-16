@@ -1,4 +1,6 @@
-package net.jnxyp.fossic.crashreporter.models;
+package net.jnxyp.fossic.crashreporter.models.info;
+
+import net.jnxyp.fossic.crashreporter.models.StackTrace;
 
 import java.util.List;
 

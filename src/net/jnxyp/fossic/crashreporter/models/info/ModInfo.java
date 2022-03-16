@@ -1,4 +1,6 @@
-package net.jnxyp.fossic.crashreporter.models;
+package net.jnxyp.fossic.crashreporter.models.info;
+
+import net.jnxyp.fossic.crashreporter.models.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +34,11 @@ public class ModInfo extends BaseInfo {
     @Override
     public String asText() {
         StringBuilder builder = new StringBuilder();
-        String rowTemplate = "|%-32s|%-8s|%-8s|\n";
+        String rowTemplate = "%-32s|%-8s|%-8s\n";
         builder.append(String.format(rowTemplate, "Mod名称", "Mod版本", "已启用"));
-        builder.append("|-|-|-|\n");
+        builder.append("=========================================================================================\n");
         for (Mod info : mods) {
-            builder.append(String.format("|%-32s|%-8s|%-8s|\n", info.name, info.version, info.enabled ? "是" : "否"));
+            builder.append(String.format("%-32s|%-8s|%-8s\n", info.name, info.version, info.enabled ? "是" : "否"));
         }
 
         return builder.toString();

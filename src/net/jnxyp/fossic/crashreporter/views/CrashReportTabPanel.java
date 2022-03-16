@@ -2,8 +2,8 @@ package net.jnxyp.fossic.crashreporter.views;
 
 import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
-import net.jnxyp.fossic.crashreporter.models.BaseInfo;
-import net.jnxyp.fossic.crashreporter.models.LogInfo;
+import net.jnxyp.fossic.crashreporter.models.info.BaseInfo;
+import net.jnxyp.fossic.crashreporter.models.info.LogInfo;
 
 import javax.swing.*;
 
@@ -60,6 +60,7 @@ public class CrashReportTabPanel extends TabPanel {
 
     void initComponents() {
         reportTextArea = new JTextArea();
+        reportTextArea.setFont(Config.REPORT_FONT);
         reportScrollPane = new JScrollPane(reportTextArea);
 
         reportCopyButton = new JButton("复制报告内容");

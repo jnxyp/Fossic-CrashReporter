@@ -1,6 +1,7 @@
 package net.jnxyp.fossic.crashreporter;
 
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -10,38 +11,32 @@ import java.util.regex.Pattern;
 
 public final class Config {
     public static final String PROGRAM_NAME = "远行星号 报错信息收集工具";
-    public static final String PROGRAM_VERSION = "2.0.0";
+    public static final String PROGRAM_VERSION = "1.1.2";
+    public static final String AUTHOR_INFO = "远行星号中文论坛 jn_xyp (jinan.xyp@gmail.com)";
 
     public static final Font UI_FONT = UIManager.getFont("Label.font").deriveFont(16.0f);
+    public static final Font REPORT_FONT = new FontUIResource(FontUIResource.MONOSPACED, Font.PLAIN, 14);
 
     public Path GAME_PATH = Paths.get("");
 
     public static final Pattern JSON_COMMENTS_PATTERN = Pattern.compile("#.*$", Pattern.MULTILINE);
 
     public static final String GAME_JRE_DEFAULT_VERSION = "1.7.0_79";
-    public static final String[] RELATIVE_GAME_JRE_PATH = {"jre"};
-    public static final String[] RELATIVE_GAME_JRE_EXE_PATH = {"bin", "java.exe"};
 
-    public static final String[] RELATIVE_VMPARAMS_PATH = {"vmparams"};
     public static final int VMPARAMS_XMS_DEFAULT_VALUE = 1536;
     public static final int VMPARAMS_XMX_DEFAULT_VALUE = 1536;
     public static final Charset VMPARAMS_CHARSET = StandardCharsets.UTF_8;
 
     public static final int[] SETTING_MEMORY_LEVELS = {1024, 1536, 2048, 3072, 4096, 6144, 8192};
 
-    public static final String[] RELATIVE_MOD_PATH = {"mods"};
-    public static final String[] RELATIVE_ENABLED_MOD_LIST_PATH = {"mods", "enabled_mods.json"};
     public static final Charset ENABLED_MOD_LIST_CHARSET = StandardCharsets.UTF_8;
-    public static final String[] RELATIVE_MOD_INFO_PATH = {"mod_info.json"};
     public static final Charset MOD_INFO_CHARSET = StandardCharsets.UTF_8;
-    public static final String[] RELATIVE_LOG_PATH = {"starsector-core", "starsector.log"};
     public static final String[] PRIORITY_MOD_IDS = {"lw_lazylib", "shaderLib", "MagicLib", "dronelib"};
 
     public static final Charset LOG_CHARSET = Charset.forName("GB2312");
     public static final int MAX_LOG_CHECK_LINES = 500;
     public static final int LOG_LINES_IF_NO_EXCEPTION = 50;
     public static final int LOG_LINES_ABOVE_EXCEPTION = 3;
-    public static final Pattern LOG_EXCEPTION_LINE_PATTERN = Pattern.compile("ERROR");
 
     public static final String URL_CLOUD_PASTEBOARD = "https://cp.api.jnxyp.net/";
     public static final String URL_FOSSIC_CRASH_REPORT = "https://www.fossic.org/forum.php?mod=post&action=newthread&fid=41&extra=page%3D1&sortid=6";
@@ -63,26 +58,30 @@ public final class Config {
     }
 
     public Path getVmparamsPath() {
-        return Paths.get(getGamePath().toString(), RELATIVE_VMPARAMS_PATH);
+        return Paths.get(getGamePath().toString(), "vmparams");
     }
 
     public Path getModPath() {
-        return Paths.get(getGamePath().toString(), RELATIVE_MOD_PATH);
+        return Paths.get(getGamePath().toString(), "mods");
     }
 
     public Path getLogPath() {
-        return Paths.get(getGamePath().toString(), RELATIVE_LOG_PATH);
+        return Paths.get(getGamePath().toString(), "starsector-core", "starsector.log");
     }
 
     public Path getGameJrePath() {
-        return Paths.get(getGamePath().toString(), RELATIVE_GAME_JRE_PATH);
+        return Paths.get(getGamePath().toString(), "jre");
     }
 
     public Path getGameJreExePath() {
-        return Paths.get(getGameJrePath().toString(), RELATIVE_GAME_JRE_EXE_PATH);
+        return Paths.get(getGameJrePath().toString(), "bin", "java.exe");
     }
 
     public Path getEnabledModListPath() {
-        return Paths.get(getGamePath().toString(), RELATIVE_ENABLED_MOD_LIST_PATH);
+        return Paths.get(getGamePath().toString(), "mods", "enabled_mods.json");
+    }
+
+    public Path getStarsectorObfPath() {
+        return Paths.get(getGamePath().toString(), "starsector-core", "starfarer_obf.jar");
     }
 }

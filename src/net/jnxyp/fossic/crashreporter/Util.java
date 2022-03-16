@@ -68,6 +68,25 @@ public final class Util {
         }
     }
 
+    public static String readInputStream(InputStream is) throws IOException {
+        return readInputStream(is, Charset.defaultCharset());
+    }
+
+    public static String readInputStream(InputStream is, Charset charset) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset));
+        StringBuilder output = new StringBuilder();
+        String line;
+        while (true) {
+            line = reader.readLine();
+            if (line == null) {
+                break;
+            }
+            output.append(line);
+            output.append("\n");
+        }
+        return output.toString();
+    }
+
     public static class CmdRunner {
         private static CmdRunner instance;
         private Charset charset = Charset.defaultCharset();
@@ -96,18 +115,7 @@ public final class Util {
             pb.directory(workingDirectory);
             pb.redirectErrorStream(true);
             Process p = pb.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), charset));
-            StringBuilder output = new StringBuilder();
-            String line;
-            while (true) {
-                line = reader.readLine();
-                if (line == null) {
-                    break;
-                }
-                output.append(line);
-                output.append("\n");
-            }
-            return output.toString();
+            return readInputStream(p.getInputStream(), charset);
         }
 
         public String runCommand(String[] args) throws IOException {

@@ -4,7 +4,7 @@ import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
 import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
 import net.jnxyp.fossic.crashreporter.models.Mod;
-import net.jnxyp.fossic.crashreporter.models.ModInfo;
+import net.jnxyp.fossic.crashreporter.models.info.ModInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -22,10 +22,10 @@ public class ModsInfoCollector extends BaseInfoCollector {
 
 
     @Override
-    public void collectInfo() {
+    public void tryCollectInfo() {
         collectModInfo();
         collectEnabledModInfo();
-        super.collectInfo();
+        infoCollected = true;
     }
 
     protected void collectModInfo() {
@@ -43,7 +43,7 @@ public class ModsInfoCollector extends BaseInfoCollector {
             getInfo().addError(new InfoCollectionPartialFailureException(this, "在遍历Mod文件夹时发生错误", e));
         }
         for (File modFolder : modFolders) {
-            File modInfoFile = Paths.get(modFolder.toString(), Config.RELATIVE_MOD_INFO_PATH).toFile();
+            File modInfoFile = Paths.get(modFolder.toString(), "mod_info.json").toFile();
             if (modInfoFile.exists()) {
                 try {
                     getInfo().mods.add(Mod.fromModInfoFile(modInfoFile));

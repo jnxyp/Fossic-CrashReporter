@@ -3,12 +3,11 @@ package net.jnxyp.fossic.crashreporter.collectors;
 import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
 import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
-import net.jnxyp.fossic.crashreporter.models.BaseInfo;
-import net.jnxyp.fossic.crashreporter.models.LogInfo;
-import net.jnxyp.fossic.crashreporter.models.ModInfo;
+import net.jnxyp.fossic.crashreporter.models.info.LogInfo;
 
 import java.io.*;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 public class LogInfoCollector extends BaseInfoCollector {
@@ -17,11 +16,11 @@ public class LogInfoCollector extends BaseInfoCollector {
     }
 
     @Override
-    public void collectInfo() {
+    public void tryCollectInfo() {
         // todo: Implement a LogInfo model and move log parsing logic into it
         getInfo().logs = readLog();
         getInfo().errorInfo = extractErrorInfo(getInfo().logs);
-        super.collectInfo();
+        infoCollected = true;
     }
 
     protected List<String> readLog() {
@@ -36,10 +35,11 @@ public class LogInfoCollector extends BaseInfoCollector {
     }
 
     protected static List<String> extractErrorInfo(List<String> logs) {
+        Pattern errorPattern = Pattern.compile("ERROR");
         int endIndex = logs.size() - 1;
         for (int i = endIndex; i >= 0; i--) {
             String line = logs.get(i);
-            if (Config.LOG_EXCEPTION_LINE_PATTERN.matcher(line).find()) {
+            if (errorPattern.matcher(line).find()) {
                 return logs.subList(Math.max(i - Config.LOG_LINES_ABOVE_EXCEPTION, 0), endIndex);
             }
         }

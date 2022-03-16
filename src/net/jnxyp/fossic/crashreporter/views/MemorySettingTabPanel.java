@@ -2,7 +2,7 @@ package net.jnxyp.fossic.crashreporter.views;
 
 import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
-import net.jnxyp.fossic.crashreporter.models.SystemInfo;
+import net.jnxyp.fossic.crashreporter.models.info.SystemInfo;
 import net.jnxyp.fossic.crashreporter.models.VmParams;
 
 import javax.swing.*;

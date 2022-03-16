@@ -3,7 +3,7 @@ package net.jnxyp.fossic.crashreporter.collectors;
 import net.jnxyp.fossic.crashreporter.Config;
 import net.jnxyp.fossic.crashreporter.Util;
 import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureException;
-import net.jnxyp.fossic.crashreporter.models.SystemInfo;
+import net.jnxyp.fossic.crashreporter.models.info.SystemInfo;
 import net.jnxyp.fossic.crashreporter.models.VmParams;
 
 import java.io.File;
@@ -22,11 +22,11 @@ public class SystemInfoCollector extends BaseInfoCollector {
     }
 
     @Override
-    public void collectInfo() {
+    public void tryCollectInfo() {
         collectSystemInfo();
         collectJreInfo();
         collectVmparams();
-        super.collectInfo();
+        infoCollected = true;
     }
 
     protected void collectSystemInfo() {
@@ -57,26 +57,28 @@ public class SystemInfoCollector extends BaseInfoCollector {
 
     protected void collectJreInfo() {
         getInfo().javaPath = Config.getInstance().getGameJrePath();
+        getInfo().foundGameJre = false;
+        getInfo().useGameDefaultJre = false;
         if (Util.getOSType().equals("WINDOWS")) {
-            getInfo().foundGameJre = false;
             try {
                 String output = Util.CmdRunner.getInstance().runCommand(new String[]{Config.getInstance().getGameJreExePath().toString(), "-version"});
                 Matcher m = GAME_JRE_CLI_VERSION_PATTERN.matcher(output);
                 if (m.find()) {
                     getInfo().javaVersion = m.group(1);
                     getInfo().foundGameJre = true;
+                    if (getInfo().javaVersion.equals(Config.GAME_JRE_DEFAULT_VERSION)) {
+                        getInfo().useGameDefaultJre = true;
+                    }
                 }
             } catch (IOException e) {
                 getInfo().addError(new InfoCollectionPartialFailureException(this, "在调用系统命令行获取Jre版本时发生错误。", e));
             }
         } else {
             // todo: try get jre version the game uses in other os
-            getInfo().foundGameJre = true;
             getInfo().javaVersion = System.getProperty("java.version");
             getInfo().javaPath = Paths.get(System.getProperty("java.home"));
         }
 
-        getInfo().useGameDefaultJre = getInfo().foundGameJre && getInfo().javaPath.compareTo(Config.getInstance().getGameJrePath()) == 0;
     }
 
     protected void collectVmparams() {

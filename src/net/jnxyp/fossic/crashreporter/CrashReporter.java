@@ -1,19 +1,16 @@
 package net.jnxyp.fossic.crashreporter;
 
-import net.jnxyp.fossic.crashreporter.models.LogInfo;
-import net.jnxyp.fossic.crashreporter.models.ModInfo;
-import net.jnxyp.fossic.crashreporter.models.SystemInfo;
+import net.jnxyp.fossic.crashreporter.collectors.*;
+import net.jnxyp.fossic.crashreporter.models.info.BaseInfo;
+import net.jnxyp.fossic.crashreporter.models.info.LogInfo;
+import net.jnxyp.fossic.crashreporter.models.info.SystemInfo;
 import net.jnxyp.fossic.crashreporter.views.CrashReportTabPanel;
-import net.jnxyp.fossic.crashreporter.views.ErrorResolveTabPanel;
 import net.jnxyp.fossic.crashreporter.views.MainFrame;
 import net.jnxyp.fossic.crashreporter.views.MemorySettingTabPanel;
-import net.jnxyp.fossic.crashreporter.collectors.BaseInfoCollector;
-import net.jnxyp.fossic.crashreporter.collectors.LogInfoCollector;
-import net.jnxyp.fossic.crashreporter.collectors.ModsInfoCollector;
-import net.jnxyp.fossic.crashreporter.collectors.SystemInfoCollector;
 
 import javax.swing.*;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CrashReporter {
@@ -30,21 +27,23 @@ public class CrashReporter {
         SystemInfoCollector systemInfoCollector = new SystemInfoCollector();
         ModsInfoCollector modInfoCollector = new ModsInfoCollector();
         LogInfoCollector logInfoCollector = new LogInfoCollector();
+        GameInfoCollector gameInfoCollector = new GameInfoCollector();
 
-        for (BaseInfoCollector collector : new BaseInfoCollector[]{systemInfoCollector, modInfoCollector, logInfoCollector}) {
+        ArrayList<BaseInfoCollector> collectors = new ArrayList<>(Arrays.asList(gameInfoCollector, systemInfoCollector, modInfoCollector, logInfoCollector));
+        ArrayList<BaseInfo> infos = new ArrayList<>();
+
+        for (BaseInfoCollector collector : collectors) {
             collector.collectInfo();
+            infos.add(collector.getInfo());
             if (collector.getInfo().hasError()) {
                 hasPartialFailure = true;
             }
         }
 
         SystemInfo systemInfo = systemInfoCollector.getInfo();
-        ModInfo modInfo = modInfoCollector.getInfo();
         LogInfo logInfo = logInfoCollector.getInfo();
 
-        CrashReportTabPanel gameLogPanel = new CrashReportTabPanel(Arrays.asList(systemInfo, modInfo), logInfo);
-        MemorySettingTabPanel memoryPanel = new MemorySettingTabPanel(systemInfo);
-        // ErrorResolveTabPanel errorPanel = new ErrorResolveTabPanel();
+
 
         // Set global font
         UIManager.put("Label.font", Config.UI_FONT);
@@ -54,15 +53,25 @@ public class CrashReporter {
         // Initialize user interface
         mainFrame = new MainFrame();
 
-        mainFrame.addTabPanel(memoryPanel, 0);
-        mainFrame.addTabPanel(gameLogPanel, 0);
+        try {
+            CrashReportTabPanel gameLogPanel = new CrashReportTabPanel(infos, logInfo);
+            mainFrame.addTabPanel(gameLogPanel, 0);
+            mainFrame.switchToTab(gameLogPanel);
+        } catch (Exception ignored){}
+
+        try{
+            MemorySettingTabPanel memoryPanel = new MemorySettingTabPanel(systemInfo);
+            mainFrame.addTabPanel(memoryPanel, 0);
+        } catch (Exception ignored){}
+
+        // ErrorResolveTabPanel errorPanel = new ErrorResolveTabPanel();
+
         // mainFrame.addTabPanel(errorPanel, 0);
-        mainFrame.switchToTab(gameLogPanel);
 
         mainFrame.setVisible(true);
 
         if (hasPartialFailure) {
-            JOptionPane.showMessageDialog(mainFrame, "部分信息收集失败，请确认将本工具置于starsector.exe所在的游戏根目录。");
+            JOptionPane.showMessageDialog(mainFrame, "部分信息收集失败，请确认将本工具置于starsector.exe所在的游戏根目录。如果已经置于根目录，请前往工具发布贴进行反馈，谢谢");
         }
     }
 }

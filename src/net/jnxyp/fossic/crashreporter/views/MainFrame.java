@@ -5,6 +5,7 @@ import net.jnxyp.fossic.crashreporter.Config;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.util.HashMap;
 
 public class MainFrame extends JFrame {
@@ -61,11 +62,11 @@ public class MainFrame extends JFrame {
 
             @Override
             void init() {
-                String aboutText = Config.PROGRAM_NAME +
-                        "\n" +
-                        Config.PROGRAM_VERSION;
-
-                this.add(new JLabel(aboutText));
+                this.add(new JLabel(Config.PROGRAM_NAME + Config.PROGRAM_VERSION));
+                this.add(new JLabel(Config.AUTHOR_INFO));
+                this.add(new JLabel("我知道很几把丑，可是又有什么办法呢（"));
+                this.add(new JLabel("只能说实用第一，毕竟一个报错小工具体积好几百M实在是太离谱了"));
+                this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             }
         };
     }

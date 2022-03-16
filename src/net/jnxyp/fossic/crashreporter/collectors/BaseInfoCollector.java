@@ -1,6 +1,7 @@
 package net.jnxyp.fossic.crashreporter.collectors;
 
-import net.jnxyp.fossic.crashreporter.models.BaseInfo;
+import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionFatalFailureException;
+import net.jnxyp.fossic.crashreporter.models.info.BaseInfo;
 
 public abstract class BaseInfoCollector {
     protected boolean infoCollected = false;
@@ -10,13 +11,19 @@ public abstract class BaseInfoCollector {
         return getInfo().getName() + "信息收集器";
     }
 
+    public boolean hasInfo() {return infoCollected;}
+
     public void collectInfo() {
-        this.infoCollected = true;
+        try {
+            tryCollectInfo();
+        } catch (Exception e) {
+            getInfo().addError(new InfoCollectionFatalFailureException(this, "本部分信息收集失败", e));
+        }
     }
 
-    public BaseInfo getInfo() {
-        return info;
-    }
+    public abstract void tryCollectInfo();
+
+    public abstract BaseInfo getInfo();
 
 
 }

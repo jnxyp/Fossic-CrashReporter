@@ -12,8 +12,8 @@ public class VmParams {
     protected String vmParams;
     protected File vmParamsFile;
 
-    public static final Pattern VMPARAMS_XMS_VALUE_PATTERN = Pattern.compile("(-Xms)(.*?)([kmg])");
-    public static final Pattern VMPARAMS_XMX_VALUE_PATTERN = Pattern.compile("(-Xmx)(.*?)([kmg])");
+    public static final Pattern VMPARAMS_XMS_VALUE_PATTERN = Pattern.compile("(-Xms)(.*?)([kmgKMG])");
+    public static final Pattern VMPARAMS_XMX_VALUE_PATTERN = Pattern.compile("(-Xmx)(.*?)([kmgKMG])");
 
     public VmParams(File vmParamsFile) throws IOException {
         this.vmParamsFile = vmParamsFile;
@@ -39,6 +39,14 @@ public class VmParams {
         Matcher mXms = VMPARAMS_XMS_VALUE_PATTERN.matcher(vmParams);
         if (mXms.find()) {
             xms = Integer.parseInt(mXms.group(2));
+            switch (mXms.group(3).toLowerCase()) {
+                case "g":
+                    xms = xms * 1024;
+                    break;
+                case "k":
+                    xms = (int) Math.ceil(xms / 1024.0);
+                    break;
+            }
         }
         return xms;
     }
@@ -48,6 +56,14 @@ public class VmParams {
         Matcher mXmx = VMPARAMS_XMX_VALUE_PATTERN.matcher(vmParams);
         if (mXmx.find()) {
             xmx = Integer.parseInt(mXmx.group(2));
+            switch (mXmx.group(3).toLowerCase()) {
+                case "g":
+                    xmx = xmx * 1024;
+                    break;
+                case "k":
+                    xmx = (int) Math.ceil(xmx / 1024.0);
+                    break;
+            }
         }
         return xmx;
     }

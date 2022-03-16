@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" build-on-make="true" name="Fossic-CrashReporter:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Fossic_CrashReporter_jar</output-path>
+    <output-path>$PROJECT_DIR$/dist</output-path>
     <root id="archive" name="Fossic-CrashReporter.jar">
       <element id="module-output" name="Fossic-CrashReporter" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-20210307.jar" path-in-jar="/" />
