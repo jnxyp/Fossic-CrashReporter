@@ -6,7 +6,6 @@ import java.awt.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 public final class Config {
@@ -17,7 +16,7 @@ public final class Config {
     public static final Font UI_FONT = UIManager.getFont("Label.font").deriveFont(16.0f);
     public static final Font REPORT_FONT = new FontUIResource(FontUIResource.MONOSPACED, Font.PLAIN, 14);
 
-    public Path GAME_PATH = Paths.get("");
+    private GamePaths gamePaths = GamePaths.fromWorkingDirectory();
 
     public static final Pattern JSON_COMMENTS_PATTERN = Pattern.compile("#.*$", Pattern.MULTILINE);
 
@@ -53,44 +52,43 @@ public final class Config {
         return instance;
     }
 
+    public void initializeGamePaths(GamePaths gamePaths) {
+        this.gamePaths = gamePaths;
+    }
+
+    public GamePaths getGamePaths() {
+        return gamePaths;
+    }
+
     public Path getGamePath() {
-        return GAME_PATH.toAbsolutePath();
+        return gamePaths.getGameRoot();
     }
 
     public Path getVmparamsPath() {
-        return Paths.get(getGamePath().toString(), "vmparams");
+        return gamePaths.getVmparamsPath();
     }
 
     public Path getModPath() {
-        return Paths.get(getGamePath().toString(), "mods");
+        return gamePaths.getModsPath();
     }
 
     public Path getLogPath() {
-        if (Util.getOSType().equals("WINDOWS")) {
-            return Paths.get(getGamePath().toString(), "starsector-core", "starsector.log");
-        }
-        return Paths.get(getGamePath().toString(), "starsector.log");
+        return gamePaths.getLogPath();
     }
 
     public Path getGameJrePath() {
-        if (Util.getOSType().equals("UNIX")) {
-            return Paths.get(getGamePath().toString(), "jre_linux");
-        }
-        return Paths.get(getGamePath().toString(), "jre");
+        return gamePaths.getGameJrePath();
     }
 
     public Path getGameJreExePath() {
-        return Paths.get(getGameJrePath().toString(), "bin", "java.exe");
+        return gamePaths.getGameJreExePath();
     }
 
     public Path getEnabledModListPath() {
-        return Paths.get(getGamePath().toString(), "mods", "enabled_mods.json");
+        return gamePaths.getEnabledModListPath();
     }
 
     public Path getStarsectorObfPath() {
-        if (Util.getOSType().equals("WINDOWS")) {
-            return Paths.get(getGamePath().toString(), "starsector-core", "starfarer_obf.jar");
-        }
-        return Paths.get(getGamePath().toString(), "starfarer_obf.jar");
+        return gamePaths.getStarsectorObfPath();
     }
 }

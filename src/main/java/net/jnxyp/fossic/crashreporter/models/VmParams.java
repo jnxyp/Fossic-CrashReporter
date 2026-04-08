@@ -5,19 +5,20 @@ import net.jnxyp.fossic.crashreporter.Util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VmParams {
     protected String vmParams;
-    protected File vmParamsFile;
+    protected Path vmParamsPath;
 
     public static final Pattern VMPARAMS_XMS_VALUE_PATTERN = Pattern.compile("(-Xms)(.*?)([kmgKMG])");
     public static final Pattern VMPARAMS_XMX_VALUE_PATTERN = Pattern.compile("(-Xmx)(.*?)([kmgKMG])");
 
-    public VmParams(File vmParamsFile) throws IOException {
-        this.vmParamsFile = vmParamsFile;
-        vmParams = Util.readFile(vmParamsFile, Config.VMPARAMS_CHARSET);
+    public VmParams(Path vmParamsPath) throws IOException {
+        this.vmParamsPath = vmParamsPath;
+        vmParams = Util.readFile(vmParamsPath.toFile(), Config.VMPARAMS_CHARSET);
     }
 
     public String getVmParams() {
@@ -69,6 +70,6 @@ public class VmParams {
     }
 
     public void save() throws IOException {
-        Util.writeTextFile(vmParamsFile, getVmParams(), Config.VMPARAMS_CHARSET);
+        Util.writeTextFile(vmParamsPath.toFile(), getVmParams(), Config.VMPARAMS_CHARSET);
     }
 }

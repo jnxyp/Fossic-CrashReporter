@@ -9,20 +9,21 @@ import net.jnxyp.fossic.crashreporter.views.MainFrame;
 import net.jnxyp.fossic.crashreporter.views.MemorySettingTabPanel;
 
 import javax.swing.*;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CrashReporter {
     protected MainFrame mainFrame;
     protected boolean hasPartialFailure;
+    protected final GamePaths gamePaths;
 
     public CrashReporter() {
-        this(Config.getInstance().GAME_PATH);
+        this(Config.getInstance().getGamePaths());
     }
 
-    public CrashReporter(Path gamePath) {
-        Config.getInstance().GAME_PATH = gamePath;
+    public CrashReporter(GamePaths gamePaths) {
+        this.gamePaths = gamePaths;
+        Config.getInstance().initializeGamePaths(gamePaths);
 
         SystemInfoCollector systemInfoCollector = new SystemInfoCollector();
         ModsInfoCollector modInfoCollector = new ModsInfoCollector();

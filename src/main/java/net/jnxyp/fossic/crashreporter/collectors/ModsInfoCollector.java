@@ -11,7 +11,6 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class ModsInfoCollector extends BaseInfoCollector {
@@ -43,7 +42,7 @@ public class ModsInfoCollector extends BaseInfoCollector {
             getInfo().addError(new InfoCollectionPartialFailureException(this, "在遍历Mod文件夹时发生错误", e));
         }
         for (File modFolder : modFolders) {
-            File modInfoFile = Paths.get(modFolder.toString(), "mod_info.json").toFile();
+            File modInfoFile = Config.getInstance().getGamePaths().getModInfoPath(modFolder.toPath()).toFile();
             if (modInfoFile.exists()) {
                 try {
                     getInfo().mods.add(Mod.fromModInfoFile(modInfoFile));

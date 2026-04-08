@@ -6,7 +6,6 @@ import net.jnxyp.fossic.crashreporter.exceptions.InfoCollectionPartialFailureExc
 import net.jnxyp.fossic.crashreporter.models.info.SystemInfo;
 import net.jnxyp.fossic.crashreporter.models.VmParams;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Paths;
@@ -82,11 +81,11 @@ public class SystemInfoCollector extends BaseInfoCollector {
     }
 
     protected void collectVmparams() {
-        File vmParamsFile = Config.getInstance().getVmparamsPath().toFile();
+        java.nio.file.Path vmParamsPath = Config.getInstance().getVmparamsPath();
         try {
-            getInfo().vmParams = new VmParams(vmParamsFile);
+            getInfo().vmParams = new VmParams(vmParamsPath);
         } catch (IOException | NumberFormatException e) {
-            getInfo().addError(new InfoCollectionPartialFailureException(this, String.format("从 %s 读取Vmparams信息时发生错误", vmParamsFile.getAbsolutePath()), e));
+            getInfo().addError(new InfoCollectionPartialFailureException(this, String.format("从 %s 读取Vmparams信息时发生错误", vmParamsPath.toAbsolutePath()), e));
         }
     }
 

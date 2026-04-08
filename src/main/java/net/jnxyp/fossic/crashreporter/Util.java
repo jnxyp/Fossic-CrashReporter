@@ -119,7 +119,7 @@ public final class Util {
         }
 
         public String runCommand(String[] args) throws IOException {
-            return runCommand(args, Config.getInstance().getGamePath().toFile());
+            return runCommand(args, Config.getInstance().getGamePaths().getGameRoot().toFile());
         }
 
         public String runCommand(String command) throws IOException {
