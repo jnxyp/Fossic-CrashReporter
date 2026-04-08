@@ -1,9 +1,19 @@
-# Project exclude paths
+# Build outputs
+/target/
 /out/
 /dist/
-/target/
-/.vscode/
-/.idea/
-*.log
 *dist.xml
+
+# Maven wrapper files should be committed.
+# Ignore only the project-local Maven repository cache.
+/.mvn/repository/
+/.mvn/wrapper/dists/
+
+# IDE files
+/.idea/
+/.vscode/
+*.iml
+
+# Misc
+*.log
 AGENTS.md
