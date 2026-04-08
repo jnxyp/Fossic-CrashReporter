@@ -1,5 +1,9 @@
 # Project exclude paths
 /out/
 /dist/
+/target/
+/.vscode/
+/.idea/
 *.log
 *dist.xml
+AGENTS.md
