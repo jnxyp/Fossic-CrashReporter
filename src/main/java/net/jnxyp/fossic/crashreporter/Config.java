@@ -6,11 +6,13 @@ import java.awt.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public final class Config {
     public static final String PROGRAM_NAME = "远行星号 报错信息收集工具";
-    public static final String PROGRAM_VERSION = "1.1.3";
+    public static final String PROGRAM_VERSION = resolveProgramVersion();
     public static final String AUTHOR_INFO = "远行星号中文论坛 jn_xyp (jinan.xyp@gmail.com)";
 
     public static final Font UI_FONT = UIManager.getFont("Label.font").deriveFont(16.0f);
@@ -20,7 +22,7 @@ public final class Config {
 
     public static final Pattern JSON_COMMENTS_PATTERN = Pattern.compile("#.*$", Pattern.MULTILINE);
 
-    public static final String GAME_JRE_DEFAULT_VERSION = "1.7.0_79";
+    public static final List<String> GAME_JRE_DEFAULT_VERSIONS = Arrays.asList("1.7.0_79", "17.0.10");
 
     public static final int VMPARAMS_XMS_DEFAULT_VALUE = 1536;
     public static final int VMPARAMS_XMX_DEFAULT_VALUE = 1536;
@@ -50,6 +52,12 @@ public final class Config {
             instance = new Config();
         }
         return instance;
+    }
+
+    private static String resolveProgramVersion() {
+        Package configPackage = Config.class.getPackage();
+        String implementationVersion = configPackage == null ? null : configPackage.getImplementationVersion();
+        return implementationVersion == null ? "dev" : implementationVersion;
     }
 
     public void initializeGamePaths(GamePaths gamePaths) {

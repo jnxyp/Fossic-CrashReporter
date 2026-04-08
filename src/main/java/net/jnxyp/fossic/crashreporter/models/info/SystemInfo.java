@@ -36,7 +36,7 @@ public class SystemInfo extends BaseInfo {
             builder.append("**警告：未找到游戏默认Java运行时**\n\n");
         } else {
             if (!useGameDefaultJre) {
-                builder.append(String.format("**警告：游戏目录下Java运行时版本与默认值(%s)不符**\n\n", Config.GAME_JRE_DEFAULT_VERSION));
+                builder.append(String.format("**警告：游戏目录下Java运行时版本不在默认值列表中(%s)**\n\n", Config.GAME_JRE_DEFAULT_VERSIONS));
             }
             builder.append(String.format("Java版本：`%s`\n\n", javaVersion));
             builder.append(String.format("Java路径：%s\n\n", javaPath));
@@ -65,7 +65,7 @@ public class SystemInfo extends BaseInfo {
             builder.append("警告：未找到游戏默认Java运行时\n");
         } else {
             if (!useGameDefaultJre) {
-                builder.append(String.format("警告：游戏目录下Java运行时版本与默认值(%s)不符\n", Config.GAME_JRE_DEFAULT_VERSION));
+                builder.append(String.format("警告：游戏目录下Java运行时版本不在默认值列表中(%s)\n", Config.GAME_JRE_DEFAULT_VERSIONS));
             }
             builder.append(String.format("Java版本：\t\t%s\n", javaVersion));
             builder.append(String.format("Java路径：\t\t%s\n", javaPath));

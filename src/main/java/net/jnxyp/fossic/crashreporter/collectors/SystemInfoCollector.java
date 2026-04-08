@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class SystemInfoCollector extends BaseInfoCollector {
 
-    public static final Pattern GAME_JRE_CLI_VERSION_PATTERN = Pattern.compile("java version \"(.*?)\"");
+    public static final Pattern GAME_JRE_CLI_VERSION_PATTERN = Pattern.compile("(?:java|openjdk) version \"(.*?)\"");
 
     public SystemInfoCollector() {
         info = new SystemInfo();
@@ -65,7 +65,7 @@ public class SystemInfoCollector extends BaseInfoCollector {
                 if (m.find()) {
                     getInfo().javaVersion = m.group(1);
                     getInfo().foundGameJre = true;
-                    if (getInfo().javaVersion.equals(Config.GAME_JRE_DEFAULT_VERSION)) {
+                    if (Config.GAME_JRE_DEFAULT_VERSIONS.contains(getInfo().javaVersion)) {
                         getInfo().useGameDefaultJre = true;
                     }
                 }
