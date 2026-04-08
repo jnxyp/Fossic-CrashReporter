@@ -6,7 +6,7 @@
 
     <groupId>net.jnxyp.fossic</groupId>
     <artifactId>fossic-crashreporter</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.1.4</version>
     <name>Fossic-CrashReporter</name>
     <description>Crash information collection tool for Starsector players.</description>
 
@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>7</maven.compiler.release>
         <main.class>net.jnxyp.fossic.crashreporter.Main</main.class>
-        <exe4j.version>0.1.0</exe4j.version>
+        <exe4j.version>1.1.4</exe4j.version>
     </properties>
 
     <dependencies>
