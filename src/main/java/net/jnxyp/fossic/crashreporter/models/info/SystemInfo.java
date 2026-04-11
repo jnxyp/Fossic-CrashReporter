@@ -106,9 +106,6 @@ public class SystemInfo extends BaseInfo {
             return;
         }
 
-        if (isToolJavaDifferentFromGameJava()) {
-            builder.append("提示：工具运行Java与游戏自带Java不同\n");
-        }
         builder.append(String.format("工具运行Java版本：\t%s\n", toolJavaVersion));
         builder.append(String.format("工具运行Java路径：\t%s\n", toolJavaPath));
     }

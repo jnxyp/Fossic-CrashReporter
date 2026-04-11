@@ -19,6 +19,8 @@ import java.util.Hashtable;
 
 
 public class MemorySettingTabPanel extends TabPanel {
+    private static final int MEMORY_TICK_UNIT = 512;
+
     protected SystemInfo systemInfo;
     protected int memoryValue;
 
@@ -99,7 +101,7 @@ public class MemorySettingTabPanel extends TabPanel {
     }
 
     protected void update() {
-        memoryValueLabel.setText(memoryValue + " M");
+        memoryValueLabel.setText(formatMemorySize(memoryValue));
     }
 
     public void setMemoryValue(int memoryValue) {
@@ -121,28 +123,23 @@ public class MemorySettingTabPanel extends TabPanel {
         maxValue = Math.max(1024, maxValue);
 
         ArrayList<Integer> memoryLevels = new ArrayList<>();
-        Hashtable<Integer, JLabel> sliderLabels = new Hashtable<>();
 
         for (int i : Config.SETTING_MEMORY_LEVELS) {
             if (i <= maxValue) {
                 memoryLevels.add(i);
-                JLabel label = new JLabel(String.format("%d M", i));
-                label.setFont(Config.UI_FONT.deriveFont(12.0f));
-                sliderLabels.put(i, label);
             }
         }
         if (!memoryLevels.contains(maxValue)) {
             memoryLevels.add(maxValue);
-            JLabel label = new JLabel(String.format("%d M", maxValue));
-            label.setFont(Config.UI_FONT.deriveFont(12.0f));
-            sliderLabels.put(maxValue, label);
         }
         Collections.sort(memoryLevels);
 
         currentValue = Math.min(currentValue, Collections.max(memoryLevels));
         memoryValue = currentValue;
 
-        JSlider slider = new JSlider(JSlider.HORIZONTAL, Collections.min(memoryLevels), Collections.max(memoryLevels), currentValue);
+        int minValue = Collections.min(memoryLevels);
+        maxValue = Collections.max(memoryLevels);
+        JSlider slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, currentValue);
 
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -150,14 +147,51 @@ public class MemorySettingTabPanel extends TabPanel {
             }
         });
 
-        slider.setLabelTable(sliderLabels);
-        slider.setMinorTickSpacing(128);
-        slider.setMajorTickSpacing(256);
+        int majorTickSpacing = calculateMajorTickSpacing(minValue, maxValue);
+        slider.setLabelTable(generateSliderLabels(minValue, maxValue, majorTickSpacing));
+        slider.setMinorTickSpacing(MEMORY_TICK_UNIT);
+        slider.setMajorTickSpacing(majorTickSpacing);
         slider.setPaintLabels(true);
         slider.setPaintTicks(true);
         slider.setSnapToTicks(true);
 
         return slider;
+    }
+
+    private Hashtable<Integer, JLabel> generateSliderLabels(int minValue, int maxValue, int majorTickSpacing) {
+        Hashtable<Integer, JLabel> sliderLabels = new Hashtable<>();
+        sliderLabels.put(minValue, createSliderLabel(minValue));
+
+        int firstMajorTick = roundUp(minValue, majorTickSpacing);
+        for (int value = firstMajorTick; value <= maxValue; value += majorTickSpacing) {
+            sliderLabels.put(value, createSliderLabel(value));
+        }
+
+        if (!sliderLabels.containsKey(maxValue)) {
+            sliderLabels.put(maxValue, createSliderLabel(maxValue));
+        }
+        return sliderLabels;
+    }
+
+    private JLabel createSliderLabel(int value) {
+        JLabel label = new JLabel(formatMemorySize(value));
+        label.setFont(Config.UI_FONT.deriveFont(12.0f));
+        return label;
+    }
+
+    private int calculateMajorTickSpacing(int minValue, int maxValue) {
+        int range = Math.max(1, maxValue - minValue);
+        int targetIntervalCount = 6;
+        int rawSpacing = (int) Math.ceil(range / (double) targetIntervalCount);
+        return roundUp(rawSpacing, MEMORY_TICK_UNIT);
+    }
+
+    private int roundUp(int value, int unit) {
+        return ((value + unit - 1) / unit) * unit;
+    }
+
+    private String formatMemorySize(int memoryValue) {
+        return String.format("%d M", memoryValue);
     }
 
 }
