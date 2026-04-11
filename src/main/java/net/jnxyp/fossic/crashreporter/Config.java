@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public final class Config {
     public static final String PROGRAM_NAME = "远行星号 报错信息收集工具";
@@ -20,9 +19,7 @@ public final class Config {
 
     private GamePaths gamePaths = GamePaths.fromWorkingDirectory();
 
-    public static final Pattern JSON_COMMENTS_PATTERN = Pattern.compile("#.*$", Pattern.MULTILINE);
-
-    public static final List<String> GAME_JRE_DEFAULT_VERSIONS = Arrays.asList("1.7.0_79", "17.0.10");
+    public static final List<String> GAME_JRE_DEFAULT_VERSIONS = Arrays.asList("17.0.10");
 
     public static final int VMPARAMS_XMS_DEFAULT_VALUE = 1536;
     public static final int VMPARAMS_XMX_DEFAULT_VALUE = 1536;

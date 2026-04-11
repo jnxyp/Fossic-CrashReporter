@@ -1,5 +1,10 @@
 package net.jnxyp.fossic.crashreporter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -14,6 +19,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class Util {
+    private static final ObjectMapper LENIENT_JSON_MAPPER = JsonMapper.builder()
+            .enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
+            .enable(JsonReadFeature.ALLOW_YAML_COMMENTS)
+            .enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
+            .enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES)
+            .enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
+            .enable(JsonReadFeature.ALLOW_LEADING_PLUS_SIGN_FOR_NUMBERS)
+            .enable(JsonReadFeature.ALLOW_LEADING_DECIMAL_POINT_FOR_NUMBERS)
+            .enable(JsonReadFeature.ALLOW_NON_NUMERIC_NUMBERS)
+            .enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER)
+            .enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS)
+            .enable(JsonReadFeature.ALLOW_MISSING_VALUES)
+            .build();
+
     public static void copyToClipboard(String s) {
         StringSelection stringSelection = new StringSelection(s);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -51,8 +70,12 @@ public final class Util {
     }
 
     public static JSONObject parseJson(String json) {
-        String jsonWithNoComment = Config.JSON_COMMENTS_PATTERN.matcher(json).replaceAll("");
-        return new JSONObject(jsonWithNoComment);
+        try {
+            Object parsedJson = LENIENT_JSON_MAPPER.readValue(json, Object.class);
+            return new JSONObject(LENIENT_JSON_MAPPER.writeValueAsString(parsedJson));
+        } catch (JsonProcessingException e) {
+            throw new JSONException(e);
+        }
     }
 
     public static String getOSType() {
