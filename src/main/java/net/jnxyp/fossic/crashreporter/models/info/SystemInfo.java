@@ -12,6 +12,8 @@ public class SystemInfo extends BaseInfo {
 
     public String javaVersion;
     public Path javaPath;
+    public String toolJavaVersion;
+    public Path toolJavaPath;
 
     public VmParams vmParams;
 
@@ -38,9 +40,11 @@ public class SystemInfo extends BaseInfo {
             if (!useGameDefaultJre) {
                 builder.append(String.format("**警告：游戏目录下Java运行时版本不在默认值列表中(%s)**\n\n", Config.GAME_JRE_DEFAULT_VERSIONS));
             }
-            builder.append(String.format("Java版本：`%s`\n\n", javaVersion));
-            builder.append(String.format("Java路径：%s\n\n", javaPath));
+            builder.append(String.format("游戏Java版本：`%s`\n\n", javaVersion));
+            builder.append(String.format("游戏Java路径：%s\n\n", javaPath));
         }
+
+        appendToolJavaMarkdown(builder);
 
         if (vmParams != null) {
             builder.append('\n');
@@ -67,9 +71,11 @@ public class SystemInfo extends BaseInfo {
             if (!useGameDefaultJre) {
                 builder.append(String.format("警告：游戏目录下Java运行时版本不在默认值列表中(%s)\n", Config.GAME_JRE_DEFAULT_VERSIONS));
             }
-            builder.append(String.format("Java版本：\t\t%s\n", javaVersion));
-            builder.append(String.format("Java路径：\t\t%s\n", javaPath));
+            builder.append(String.format("游戏Java版本：\t\t%s\n", javaVersion));
+            builder.append(String.format("游戏Java路径：\t\t%s\n", javaPath));
         }
+
+        appendToolJavaText(builder);
 
         if (vmParams != null) {
             builder.append('\n');
@@ -80,5 +86,40 @@ public class SystemInfo extends BaseInfo {
         }
 
         return builder.toString();
+    }
+
+    private void appendToolJavaMarkdown(StringBuilder builder) {
+        if (toolJavaVersion == null && toolJavaPath == null) {
+            return;
+        }
+
+        boolean different = isToolJavaDifferentFromGameJava();
+        if (different) {
+            builder.append("**工具运行Java与游戏自带Java不同**\n\n");
+        }
+        builder.append(String.format("工具运行Java版本：`%s`\n\n", toolJavaVersion));
+        builder.append(String.format("工具运行Java路径：%s\n\n", toolJavaPath));
+    }
+
+    private void appendToolJavaText(StringBuilder builder) {
+        if (toolJavaVersion == null && toolJavaPath == null) {
+            return;
+        }
+
+        if (isToolJavaDifferentFromGameJava()) {
+            builder.append("提示：工具运行Java与游戏自带Java不同\n");
+        }
+        builder.append(String.format("工具运行Java版本：\t%s\n", toolJavaVersion));
+        builder.append(String.format("工具运行Java路径：\t%s\n", toolJavaPath));
+    }
+
+    private boolean isToolJavaDifferentFromGameJava() {
+        if (!foundGameJre || javaVersion == null || javaPath == null) {
+            return false;
+        }
+        if (toolJavaVersion != null && !toolJavaVersion.equals(javaVersion)) {
+            return true;
+        }
+        return toolJavaPath != null && !toolJavaPath.toAbsolutePath().normalize().equals(javaPath.toAbsolutePath().normalize());
     }
 }

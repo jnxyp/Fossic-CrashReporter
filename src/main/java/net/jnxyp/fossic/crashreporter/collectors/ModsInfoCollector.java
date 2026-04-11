@@ -56,6 +56,12 @@ public class ModsInfoCollector extends BaseInfoCollector {
     protected void collectEnabledModInfo()  {
         ArrayList<String> enabledModIds = new ArrayList<>();
         File enabledModListFile = Config.getInstance().getEnabledModListPath().toFile();
+        if (!enabledModListFile.exists()) {
+            getInfo().foundEnabledModList = false;
+            Collections.sort(getInfo().mods);
+            return;
+        }
+
         try {
             String modListString = Util.readFile(enabledModListFile, Config.ENABLED_MOD_LIST_CHARSET);
             JSONArray array = Util.parseJson(modListString).getJSONArray("enabledMods");

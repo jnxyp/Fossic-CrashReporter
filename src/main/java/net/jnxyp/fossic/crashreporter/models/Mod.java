@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,20 +28,49 @@ public class Mod implements Comparable<Mod> {
     public static Mod fromModInfoFile(File modInfoFile) throws IOException {
         String modInfoString = Util.readFile(modInfoFile, Config.MOD_INFO_CHARSET);
         JSONObject dict = Util.parseJson(modInfoString);
-        Object versionObj = dict.get("version");
-        String version = "";
-        if (versionObj instanceof String) {
-            version = (String) versionObj;
-        } else if (versionObj instanceof JSONObject) {
-            JSONObject v = (JSONObject) versionObj;
-            version = String.format("%s.%s.%s", v.get("major").toString(), v.get("minor").toString(), v.get("patch").toString());
-        }
         return new Mod(
                 dict.getString("id"),
                 dict.getString("name"),
-                version,
+                parseVersion(dict),
                 dict.getString("gameVersion"),
                 false);
+    }
+
+    private static String parseVersion(JSONObject dict) {
+        if (!dict.has("version")) {
+            return "";
+        }
+
+        Object versionObj = dict.get("version");
+        if (versionObj instanceof JSONObject) {
+            return parseVersionObject((JSONObject) versionObj);
+        }
+        return versionObj.toString();
+    }
+
+    private static String parseVersionObject(JSONObject versionObj) {
+        ArrayList<String> parts = new ArrayList<>();
+        appendVersionPart(parts, versionObj, "major");
+        appendVersionPart(parts, versionObj, "minor");
+        appendVersionPart(parts, versionObj, "patch");
+        return joinVersionParts(parts);
+    }
+
+    private static void appendVersionPart(List<String> parts, JSONObject versionObj, String key) {
+        if (versionObj.has(key)) {
+            parts.add(versionObj.get(key).toString());
+        }
+    }
+
+    private static String joinVersionParts(List<String> parts) {
+        StringBuilder builder = new StringBuilder();
+        for (String part : parts) {
+            if (builder.length() > 0) {
+                builder.append('.');
+            }
+            builder.append(part);
+        }
+        return builder.toString();
     }
 
     @Override

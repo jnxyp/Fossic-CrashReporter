@@ -117,20 +117,30 @@ public class MemorySettingTabPanel extends TabPanel {
     public JSlider generateMemorySlider() {
         int ram = (int) (systemInfo.totalRam / 1024.0 / 1024.0);
         int currentValue = systemInfo.vmParams.getXmx();
+        int maxValue = Math.min(Config.SETTING_MEMORY_MAX_VALUE, ram - Config.SETTING_MEMORY_RESERVED_FOR_SYSTEM);
+        maxValue = Math.max(1024, maxValue);
 
         ArrayList<Integer> memoryLevels = new ArrayList<>();
         Hashtable<Integer, JLabel> sliderLabels = new Hashtable<>();
 
         for (int i : Config.SETTING_MEMORY_LEVELS) {
-            if (i < ram) {
+            if (i <= maxValue) {
                 memoryLevels.add(i);
                 JLabel label = new JLabel(String.format("%d M", i));
                 label.setFont(Config.UI_FONT.deriveFont(12.0f));
                 sliderLabels.put(i, label);
             }
         }
+        if (!memoryLevels.contains(maxValue)) {
+            memoryLevels.add(maxValue);
+            JLabel label = new JLabel(String.format("%d M", maxValue));
+            label.setFont(Config.UI_FONT.deriveFont(12.0f));
+            sliderLabels.put(maxValue, label);
+        }
+        Collections.sort(memoryLevels);
 
         currentValue = Math.min(currentValue, Collections.max(memoryLevels));
+        memoryValue = currentValue;
 
         JSlider slider = new JSlider(JSlider.HORIZONTAL, Collections.min(memoryLevels), Collections.max(memoryLevels), currentValue);
 

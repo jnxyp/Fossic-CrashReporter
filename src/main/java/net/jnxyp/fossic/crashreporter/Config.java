@@ -28,7 +28,9 @@ public final class Config {
     public static final int VMPARAMS_XMX_DEFAULT_VALUE = 1536;
     public static final Charset VMPARAMS_CHARSET = StandardCharsets.UTF_8;
 
-    public static final int[] SETTING_MEMORY_LEVELS = {1024, 1536, 2048, 3072, 4096, 6144, 8192};
+    public static final int SETTING_MEMORY_RESERVED_FOR_SYSTEM = 4096;
+    public static final int SETTING_MEMORY_MAX_VALUE = 16384;
+    public static final int[] SETTING_MEMORY_LEVELS = {1024, 1536, 2048, 3072, 4096, 6144, 8192, 12288, 16384};
 
     public static final Charset ENABLED_MOD_LIST_CHARSET = StandardCharsets.UTF_8;
     public static final Charset MOD_INFO_CHARSET = StandardCharsets.UTF_8;

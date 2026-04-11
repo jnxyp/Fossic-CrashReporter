@@ -55,6 +55,9 @@ public class SystemInfoCollector extends BaseInfoCollector {
     }
 
     protected void collectJreInfo() {
+        getInfo().toolJavaVersion = System.getProperty("java.version");
+        getInfo().toolJavaPath = Paths.get(System.getProperty("java.home"));
+
         getInfo().javaPath = Config.getInstance().getGameJrePath();
         getInfo().foundGameJre = false;
         getInfo().useGameDefaultJre = false;
