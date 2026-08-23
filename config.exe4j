@@ -2,7 +2,7 @@
 <exe4j version="10.0.1" transformSequenceNumber="3">
   <directoryPresets config="./dist" />
   <application name="Fossic-CrashReporter" distributionSourceDir="." />
-  <executable name="Fossic-CrashReporter" wrapperType="embed" executableDir="." executableMode="gui" singleInstance="true" dpiAware="true">
+  <executable name="Fossic-CrashReporter-${project.version}" wrapperType="embed" executableDir="." executableMode="gui" singleInstance="true" dpiAware="true">
     <versionInfo include="true" fileVersion="${exe4j.version}" legalCopyright="© 2026 Durian Software Studio " internalName="Fossic-CrashReporter" companyName="Durian Software Studio" productVersion="${project.version}" />
   </executable>
   <java mainClass="net.jnxyp.fossic.crashreporter.Main" minVersion="17">
