@@ -31,6 +31,7 @@ public final class Config {
 
     public static final Charset ENABLED_MOD_LIST_CHARSET = StandardCharsets.UTF_8;
     public static final Charset MOD_INFO_CHARSET = StandardCharsets.UTF_8;
+    public static final Charset LOCALIZATION_VERSION_CHARSET = StandardCharsets.UTF_8;
     public static final String[] PRIORITY_MOD_IDS = {"lw_lazylib", "shaderLib", "MagicLib", "dronelib"};
 
     public static final Charset LOG_CHARSET = Charset.forName("GB2312");
@@ -97,5 +98,9 @@ public final class Config {
 
     public Path getStarsectorObfPath() {
         return gamePaths.getStarsectorObfPath();
+    }
+
+    public Path getLocalizationVersionPath() {
+        return gamePaths.getLocalizationVersionPath();
     }
 }

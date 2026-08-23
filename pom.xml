@@ -6,7 +6,7 @@
 
     <groupId>net.jnxyp.fossic</groupId>
     <artifactId>fossic-crashreporter</artifactId>
-    <version>1.1.4</version>
+    <version>1.1.5</version>
     <name>Fossic-CrashReporter</name>
     <description>Crash information collection tool for Starsector players.</description>
 
@@ -14,7 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
         <main.class>net.jnxyp.fossic.crashreporter.Main</main.class>
-        <exe4j.version>1.1.4</exe4j.version>
+        <exe4j.version>1.1.5</exe4j.version>
+        <junit.version>5.11.4</junit.version>
     </properties>
 
     <dependencies>
@@ -32,6 +33,12 @@
             <groupId>org.swinglabs.swingx</groupId>
             <artifactId>swingx-all</artifactId>
             <version>1.6.5-1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -60,6 +67,10 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>

@@ -58,4 +58,11 @@ public final class GamePaths {
         }
         return gameRoot.resolve("starfarer_obf.jar");
     }
+
+    public Path getLocalizationVersionPath() {
+        if (Util.getOSType().equals("WINDOWS")) {
+            return gameRoot.resolve("starsector-core").resolve("localization_version.json");
+        }
+        return gameRoot.resolve("localization_version.json");
+    }
 }
